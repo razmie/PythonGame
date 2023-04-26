@@ -1,26 +1,49 @@
 import pygame
-import pygame.time
-
-FPS = 60
+import time
+from World import World
 
 class Game:
-    pygame.init()
+    # How many frames per second should we update the game.
+    FPS = 60
 
-    screen = pygame.display.set_mode([800, 600])
+    # Set up variables needed to calculate delta time.
+    lastFrameTime = 0
+    lastFrameTime = time.time()
 
-    clock = pygame.time.Clock()
-    running = True
-    while running:
-        clock.tick(FPS)
+    screen: pygame.Surface = None
 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
+    world: World = None
 
-        screen.fill((255, 255, 255))
+    cached_events: list = None
 
-        pygame.draw.circle(screen, (0, 0, 255), (250, 250), 100)
+    def __init__(self):
+        pygame.init()
 
-        pygame.display.flip()
+        self.screen = pygame.display.set_mode([800, 600])
 
-    pygame.quit()
+        self.world = World(self)
+
+        clock = pygame.time.Clock()
+        running = True
+
+        while running:
+            # Calculate delta time.
+            self.currentTime = time.time()
+            deltaTime = self.currentTime - self.lastFrameTime
+            self.lastFrameTime = self.currentTime
+
+            clock.tick(self.FPS)
+
+            self.cached_events = pygame.event.get()
+
+            for event in self.cached_events:
+                if event.type == pygame.QUIT:
+                    running = False
+
+            self.screen.fill((255, 255, 255))
+
+            self.world.update(deltaTime)
+
+            pygame.display.flip()
+
+        pygame.quit()

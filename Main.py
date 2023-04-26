@@ -1,5 +1,4 @@
+from Game import Game
 
-from WorldTest import WorldTest
-
-game = WorldTest()
+game = Game()
 
