@@ -7,7 +7,7 @@ class World:
     game: Game = None
     camera: Camera = None
 
-    points = [(10, 10), (150, 200), (200, 400)]
+    points = [(0, 0), (150, 200), (200, 400)]
 
     def __init__(self, inGame: Game):
         self.game = inGame
@@ -17,9 +17,10 @@ class World:
         self.camera.update(deltaTime)
 
         for point in self.points:
-            p = self.camera.world_to_screen(point)
+            screen_pos = self.camera.world_to_screen(point)
+            screen_size = self.camera.world_to_screen_size(10)
 
-            pygame.draw.circle(self.game.screen, (0, 0, 255), p, 10)
+            pygame.draw.circle(self.game.screen, (0, 0, 255), screen_pos, screen_size)
 
         #pygame.draw.rect(self.game.screen, (255,0,0), (0,0,100,100), 1)
 
