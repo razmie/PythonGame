@@ -1,5 +1,4 @@
 import pygame
-import numpy
 import Game
 from Camera import Camera
 
