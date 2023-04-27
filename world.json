@@ -1,14 +1,28 @@
-[
-    {
-        "position": [0, 0],
-        "size": 10
-    },
-    {
-        "position": [100, 100],
-        "size": 10
-    },
-    {
-        "position": [200, 150],
-        "size": 10
-    }
-]
+{
+    "point_actors": [
+        {
+            "position": [0, 0],
+            "size": 10,
+            "color": [255, 0, 0]
+        },
+        {
+            "position": [100, 100],
+            "size": 100,
+            "color": [255, 0, 0]
+        }
+    ],
+    "line_actors": [
+        {
+            "start_position": [0, 0],
+            "end_position": [50, 50],
+            "width": 5,
+            "color": [0, 0, 255]
+        },
+        {
+            "start_position": [200, 200],
+            "end_position": [300, 200],
+            "width": 50,
+            "color": [0, 0, 255]
+        }
+    ]
+}

@@ -59,9 +59,7 @@ class Camera:
                 zoom_velocity = (zoom_vel_range * zoom_norm) + self.zoom_vel[0]
 
                 new_zoom = self.zoom + (event.y * zoom_velocity * deltaTime)
-
-                print(zoom_norm)
-
+                
                 if new_zoom >= self.zoom_limit[0] and new_zoom <= self.zoom_limit[1]:
                     mouse_pos = pygame.mouse.get_pos()
                     world_mouse_pos = self.screen_to_world(mouse_pos)
