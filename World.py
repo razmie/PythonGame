@@ -2,8 +2,8 @@ import pygame
 import Game
 import json
 from Camera import Camera
-from Actors.PointActor import PointActor
-from Actors.LineActor import LineActor
+from Nodes.PointNode import PointNode
+from Nodes.LineNode import LineNode
 
 class World:
     game: Game = None
@@ -14,7 +14,7 @@ class World:
 
     def __init__(self, new_game: Game):
         self.game = new_game
-        self.camera = Camera(new_game)
+        self.camera = Camera(self)
 
         self.load_point_from_json('world.json')
 
@@ -39,7 +39,7 @@ class World:
                 position = data['position']
                 size = data['size']
                 color = data['color']
-                point_actor = PointActor(self, position, size, color)
+                point_actor = PointNode(self, position, size, color)
                 self.point_actors.append(point_actor)
 
             for data in json_data['line_actors']:
@@ -47,6 +47,6 @@ class World:
                 end_position = data['end_position']
                 width = data['width']
                 color = data['color']
-                line_actor = LineActor(self, start_position, end_position, width, color)
+                line_actor = LineNode(self, start_position, end_position, width, color)
                 self.line_actors.append(line_actor)
 

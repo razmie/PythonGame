@@ -1,9 +1,12 @@
 import pygame
 import Game
+import World
 import numpy as np
+from Renderer import Renderer
 
 class Camera:
     game: Game = None
+    world: World = None
 
     width = 0
     height = 0
@@ -12,23 +15,27 @@ class Camera:
     zoom_limit = [0.5, 3]
     zoom_vel = [1, 100]
 
-    position = [0, 0]
-    last_position = [0, 0]
+    position = np.array([0, 0])
+    last_position = np.array([0, 0])
 
     panning = False
 
     interpolating = False
     interp_time = 0.1
     interp_accum_time = 0.0
-    interp_position = [0, 0]
+    interp_position = np.array([0, 0])
     interp_zoom = 1.0
 
-    def __init__(self, new_game: Game):
-        self.game = new_game
+    def __init__(self, new_world: World):
+        self.world = new_world
+        self.game = self.world.game
 
         self.width, self.height = self.game.screen.get_size()
 
     def update(self, deltaTime: float):
+        mouse_pos = pygame.mouse.get_pos()
+        world_mouse_pos = self.screen_to_world(mouse_pos)
+
         for event in self.game.cached_events:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
@@ -59,14 +66,9 @@ class Camera:
                 zoom_velocity = (zoom_vel_range * zoom_norm) + self.zoom_vel[0]
 
                 new_zoom = self.zoom + (event.y * zoom_velocity * deltaTime)
-                
-                if new_zoom >= self.zoom_limit[0] and new_zoom <= self.zoom_limit[1]:
-                    mouse_pos = pygame.mouse.get_pos()
-                    world_mouse_pos = self.screen_to_world(mouse_pos)
 
-                    new_pos = [0,0]
-                    new_pos[0] = self.position[0] + ((world_mouse_pos[0] - self.position[0]) * 0.5 * (1-zoom_norm))
-                    new_pos[1] = self.position[1] + ((world_mouse_pos[1] - self.position[1]) * 0.5 * (1-zoom_norm))
+                if new_zoom >= self.zoom_limit[0] and new_zoom <= self.zoom_limit[1]:
+                    new_pos = self.position + ((world_mouse_pos - self.position) * deltaTime * 10 * event.y)
 
                     self.interpolate(new_pos, new_zoom)
 
@@ -78,11 +80,13 @@ class Camera:
                 self.interpolating = False
 
             t = self.interp_accum_time / self.interp_time
-            self.position[0] = self.position[0] + (self.interp_position[0] - self.position[0]) * t
-            self.position[1] = self.position[1] + (self.interp_position[1] - self.position[1]) * t
+            self.position = self.position + (self.interp_position - self.position) * t
 
             self.zoom = self.zoom + (self.interp_zoom - self.zoom) * t
             self.zoom = np.clip(self.zoom, self.zoom_limit[0], self.zoom_limit[1])
+
+        Renderer.draw_point(self.world, self.interp_position, 10, (0,0,255))
+        Renderer.draw_point(self.world, world_mouse_pos, 10, (0,255,0))
 
     def get_projection_matrix(self):
         scale = np.array([[self.zoom, 0, 0], [0, self.zoom, 0], [0, 0, 1]])

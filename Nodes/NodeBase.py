@@ -2,7 +2,7 @@ import numpy as np
 import Game
 import World
 
-class ActorBase:
+class NodeBase:
     game: Game = None
     world: World = None
     position = np.array([0, 0])

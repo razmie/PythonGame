@@ -1,9 +1,9 @@
 import numpy as np
 import pygame
 import World
-from Actors.ActorBase import ActorBase
+from Nodes.NodeBase import NodeBase
 
-class LineActor(ActorBase):
+class LineNode(NodeBase):
     def __init__(self, new_world: World, new_start = np.array([0, 0]), new_end = np.array([100, 100]), new_width = 5, new_color = (0, 0, 255)):
         super().__init__(new_world)
         self.position = new_start
