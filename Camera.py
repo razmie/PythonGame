@@ -9,7 +9,7 @@ class Camera:
     height = 0
     zoom = 1.0
 
-    zoom_limit = [0.1, 3]
+    zoom_limit = [0.5, 3]
     zoom_vel = [1, 100]
 
     position = [0, 0]
@@ -23,8 +23,8 @@ class Camera:
     interp_position = [0, 0]
     interp_zoom = 1.0
 
-    def __init__(self, inGame: Game):
-        self.game = inGame
+    def __init__(self, new_game: Game):
+        self.game = new_game
 
         self.width, self.height = self.game.screen.get_size()
 
@@ -60,13 +60,15 @@ class Camera:
 
                 new_zoom = self.zoom + (event.y * zoom_velocity * deltaTime)
 
+                print(zoom_norm)
+
                 if new_zoom >= self.zoom_limit[0] and new_zoom <= self.zoom_limit[1]:
                     mouse_pos = pygame.mouse.get_pos()
                     world_mouse_pos = self.screen_to_world(mouse_pos)
 
                     new_pos = [0,0]
-                    new_pos[0] = self.position[0] + ((world_mouse_pos[0] - self.position[0]) * self.zoom * 0.5)
-                    new_pos[1] = self.position[1] + ((world_mouse_pos[1] - self.position[1]) * self.zoom * 0.5)
+                    new_pos[0] = self.position[0] + ((world_mouse_pos[0] - self.position[0]) * 0.5 * (1-zoom_norm))
+                    new_pos[1] = self.position[1] + ((world_mouse_pos[1] - self.position[1]) * 0.5 * (1-zoom_norm))
 
                     self.interpolate(new_pos, new_zoom)
 
