@@ -85,7 +85,7 @@ class Camera:
             self.zoom = self.zoom + (self.interp_zoom - self.zoom) * t
             self.zoom = np.clip(self.zoom, self.zoom_limit[0], self.zoom_limit[1])
 
-        Renderer.draw_point(self.world, self.interp_position, 10, (0,0,255))
+        #Renderer.draw_point(self.world, self.interp_position, 10, (0,0,255))
         Renderer.draw_point(self.world, world_mouse_pos, 10, (0,255,0))
 
     def get_projection_matrix(self):

@@ -11,8 +11,22 @@ class PointNode(NodeBase):
         self.size = new_size
         self.color = new_color
 
+    def load(self, data):
+        self.position = data.get("position") or self.position
+        self.scale = data.get("scale") or self.scale
+        self.rotation = data.get("rotation") or self.rotation
+        self.size = data.get("size") or self.size
+        self.color = data.get("color") or self.color
+
     def update(self, deltaTime: float):
+        #self.rotation += deltaTime
         pass
 
     def draw(self):
-        Renderer.draw_point(self.world, self.position, self.size, self.color)
+        position = self.get_world_position()
+        Renderer.draw_point(self.world, position, self.size, self.color)
+
+    def get_world_position(self):
+        mat_position = np.array([0, 0, 1])
+        mat_position = self.get_matrix() @ mat_position
+        return np.array([mat_position[0], mat_position[1]])
