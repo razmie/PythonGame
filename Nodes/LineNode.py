@@ -23,7 +23,7 @@ class LineNode(NodeBase):
     def update(self, deltaTime: float):
         pass
 
-    def draw(self):
+    def draw(self, surface: pygame.Surface):
         mat_position = np.array([0, 0, 1])
         mat_position = self.get_matrix() @ mat_position
         start = np.array([mat_position[0], mat_position[1]])

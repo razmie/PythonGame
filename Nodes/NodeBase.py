@@ -1,4 +1,5 @@
 import numpy as np
+import pygame
 import Game
 import World
 
@@ -10,14 +11,17 @@ class NodeBase:
     scale = np.array([1, 1])
     parent_node = None
 
-    def __init__(self, new_world: World):
-        self.world = new_world
-        self.game = new_world.game
+    def __init__(self, world: World):
+        self.world = world
+        self.game = world.game
+
+    def handle_events(self):
+        pass
 
     def update(self, deltaTime: float):
         pass
 
-    def draw(self):
+    def draw(self, surface: pygame.Surface):
         pass
 
     def construct_matrix(self):

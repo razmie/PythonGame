@@ -2,7 +2,7 @@ import Game
 import Level
 import World
 
-class WorldScript:
+class ScriptBase:
     game: Game = None
     level: Level = None
     world: World = None

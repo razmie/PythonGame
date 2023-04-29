@@ -7,7 +7,8 @@ import importlib
 import inspect
 import os
 from Camera import Camera
-from WorldScript import WorldScript
+from WorldAssets import WorldAssets
+from WorldScript import ScriptBase
 from Nodes.NodeBase import NodeBase
 from Nodes.PointNode import PointNode
 from Nodes.LineNode import LineNode
@@ -17,37 +18,49 @@ class World:
     level: Level = None
     camera: Camera = None
 
+    assets: WorldAssets = None
+
     nodes: NodeBase = []
     script_paths: list = []
 
-    def __init__(self, new_level: Game, world_file_path: str = None):
-        self.level = new_level
+    def __init__(self, level: Game, world_file_path: str = None):
+        self.level = level
         self.game = self.level.game
         self.camera = Camera(self)
+
+        self.assets = WorldAssets()
 
         self.load_point_from_json(world_file_path)
 
         for script_path in self.script_paths:
             self.execute_script(script_path)
 
+    def click(self):
+        print("click")
+
     def update(self, deltaTime: float):
         self.camera.update(deltaTime)
 
         for node in self.nodes:
+            node.handle_events()
             node.update(deltaTime)
-            node.draw()
+            node.draw(self.game.screen)
 
     def load_point_from_json(self, file_path: str):
         if file_path is None:
             return
         if os.path.exists(file_path) == False:
             return
-
-        self.nodes.clear()
-        self.script_paths.clear()
-
+        
         with open(file_path, 'r') as file:
             json_data = json.load(file)
+
+        for font_data in json_data['fonts']:
+            font_id = font_data["font_id"]
+            font_name = font_data["font_name"]
+            font_size = font_data["font_size"]
+
+            self.assets.add_font_asset(font_id, font_name, font_size)
 
         script_names = json_data['script_names']
         self.get_script_paths_from_names(file_path, script_names)
@@ -84,7 +97,7 @@ class World:
 
         # Get the class from the module that inherits from ParentClass
         for name, obj in inspect.getmembers(module):
-            if inspect.isclass(obj) and issubclass(obj, WorldScript):
+            if inspect.isclass(obj) and issubclass(obj, ScriptBase):
                 FoundScriptClass = obj
                 break
 

@@ -22,7 +22,7 @@ class PointNode(NodeBase):
         #self.rotation += deltaTime
         pass
 
-    def draw(self):
+    def draw(self, surface: pygame.Surface):
         position = self.get_world_position()
         Renderer.draw_point(self.world, position, self.size, self.color)
 

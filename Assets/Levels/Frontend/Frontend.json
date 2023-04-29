@@ -1,4 +1,11 @@
 {
+    "fonts":[
+        {
+            "font_id": "font1_20",
+            "font_name": "eurostile.TTF",
+            "font_size": 20          
+        }
+    ],
     "script_names": [
         "FrontendScript.py"
     ],

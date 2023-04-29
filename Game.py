@@ -39,6 +39,9 @@ class Game:
             for event in self.cached_events:
                 if event.type == pygame.QUIT:
                     running = False
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        running = False
 
             self.screen.fill((255, 255, 255))
 
