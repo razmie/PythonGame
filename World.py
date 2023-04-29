@@ -1,22 +1,34 @@
 import pygame
+import Level
 import Game
 import json
+import os
+import importlib
+import inspect
+import os
 from Camera import Camera
+from WorldScript import WorldScript
 from Nodes.NodeBase import NodeBase
 from Nodes.PointNode import PointNode
 from Nodes.LineNode import LineNode
 
 class World:
     game: Game = None
+    level: Level = None
     camera: Camera = None
 
     nodes: NodeBase = []
+    script_paths: list = []
 
-    def __init__(self, new_game: Game):
-        self.game = new_game
+    def __init__(self, new_level: Game, world_file_path: str = None):
+        self.level = new_level
+        self.game = self.level.game
         self.camera = Camera(self)
 
-        self.load_point_from_json('world.json')
+        self.load_point_from_json(world_file_path)
+
+        for script_path in self.script_paths:
+            self.execute_script(script_path)
 
     def update(self, deltaTime: float):
         self.camera.update(deltaTime)
@@ -25,14 +37,23 @@ class World:
             node.update(deltaTime)
             node.draw()
 
-    def load_point_from_json(self, file_path):
+    def load_point_from_json(self, file_path: str):
+        if file_path is None:
+            return
+        if os.path.exists(file_path) == False:
+            return
+
         self.nodes.clear()
+        self.script_paths.clear()
 
         with open(file_path, 'r') as file:
             json_data = json.load(file)
 
-            for node_data in json_data['nodes']:
-                self.load_node(node_data, None)
+        script_names = json_data['script_names']
+        self.get_script_paths_from_names(file_path, script_names)
+
+        for node_data in json_data['nodes']:
+            self.load_node(node_data, None)
 
     def load_node(self, node_data, parent_node):
         type_name = node_data['type']
@@ -48,3 +69,24 @@ class World:
             for child_node in child_node_list:
                 self.load_node(child_node, node)
 
+    def get_script_paths_from_names(self, file_path: str, names: list):
+        dir_path = os.path.dirname(file_path)
+
+        for name in names:
+            script_path = os.path.join(dir_path, name).replace("\\","/")
+            self.script_paths.append(script_path)
+
+    def execute_script(self, script_path):
+        # Import the module from the script file
+        module_spec = importlib.util.spec_from_file_location('my_module', script_path)
+        module = importlib.util.module_from_spec(module_spec)
+        module_spec.loader.exec_module(module)
+
+        # Get the class from the module that inherits from ParentClass
+        for name, obj in inspect.getmembers(module):
+            if inspect.isclass(obj) and issubclass(obj, WorldScript):
+                FoundScriptClass = obj
+                break
+
+        # Create an object from the MyClass class
+        my_object = FoundScriptClass(self)

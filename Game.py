@@ -1,6 +1,6 @@
 import pygame
 import time
-from World import World
+from Level import Level
 
 class Game:
     # How many frames per second should we update the game.
@@ -12,7 +12,7 @@ class Game:
 
     screen: pygame.Surface = None
 
-    world: World = None
+    level: Level = None
 
     cached_events: list = None
 
@@ -21,7 +21,7 @@ class Game:
 
         self.screen = pygame.display.set_mode([800, 600])
 
-        self.world = World(self)
+        self.level = Level(self, "Assets/Levels/Frontend/Frontend.json")
 
         clock = pygame.time.Clock()
         running = True
@@ -42,7 +42,7 @@ class Game:
 
             self.screen.fill((255, 255, 255))
 
-            self.world.update(deltaTime)
+            self.level.update(deltaTime)
 
             pygame.display.flip()
 
