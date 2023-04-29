@@ -6,8 +6,13 @@ import World
 from Nodes.NodeBase import NodeBase
 
 class PanelWidget(NodeBase):
-    def __init__(self, world: World):
+
+    draw_border: bool = False
+    border_color: tuple = (0,0,0)
+
+    def __init__(self, world: World, name: str = None):
         super().__init__(world)
+        self.name = name
         self.position = np.array([0,0])
 
         self.size = np.array([100,100])
@@ -32,24 +37,24 @@ class PanelWidget(NodeBase):
         vertices.append((origin[0],                 origin[1] + self.size[1]))
         return vertices
     
-    # def get_polygon_bounds(self, vertices):
-    #     min_x = float('inf')
-    #     min_y = float('inf')
-    #     max_x = float('-inf')
-    #     max_y = float('-inf')
+    def get_polygon_bounds(self, vertices):
+        min_x = float('inf')
+        min_y = float('inf')
+        max_x = float('-inf')
+        max_y = float('-inf')
         
-    #     for vertex in vertices:
-    #         x, y = vertex
-    #         if x < min_x:
-    #             min_x = x
-    #         if y < min_y:
-    #             min_y = y
-    #         if x > max_x:
-    #             max_x = x
-    #         if y > max_y:
-    #             max_y = y
+        for vertex in vertices:
+            x, y = vertex
+            if x < min_x:
+                min_x = x
+            if y < min_y:
+                min_y = y
+            if x > max_x:
+                max_x = x
+            if y > max_y:
+                max_y = y
                 
-    #     return (min_x, min_y, max_x, max_y)
+        return ((min_x, min_y), (max_x, max_y))
         
     # def create_polygon_surface(self, polygon_bounds, vertices):
     #     surface_size = (polygon_bounds[2] - polygon_bounds[0], polygon_bounds[3] - polygon_bounds[1])
@@ -70,17 +75,19 @@ class PanelWidget(NodeBase):
         return trans_mat @ rot_mat @ scale_mat @ pivot_mat
      
     def update(self, delta_time):
-        self.rotation += delta_time * 0.1
+        #self.rotation += delta_time * 0.1
+        #self.update_vertices()
+        pass
 
+    def draw(self, surface):
+        pygame.gfxdraw.filled_polygon(surface, self.rotated_vertices, self.color)
+
+        if self.draw_border == True:
+            pygame.gfxdraw.aapolygon(surface, self.rotated_vertices, self.border_color)
+
+    def reconstruct_body(self):
         self.rotated_vertices = []
         for i in range(len(self.vertices)):
             mat_position = np.array([self.vertices[i][0], self.vertices[i][1], 1])
             mat_position = self.get_matrix() @ mat_position
             self.rotated_vertices.append((mat_position[0], mat_position[1]))
-
-    def draw(self, surface):
-        pygame.gfxdraw.filled_polygon(surface, self.rotated_vertices, self.color)
-
-        # Draw border
-        #pygame.gfxdraw.aapolygon(surface, self.rotated_vertices, (0, 0, 0))
-
