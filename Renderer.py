@@ -2,7 +2,7 @@ import numpy as np
 import pygame
 import World
 
-class Renderer:
+class RenderUtil:
     @staticmethod
     def draw_point(world: World, position, size: int, color: pygame.color):
         screen_pos = world.camera.world_to_screen(position)

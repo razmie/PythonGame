@@ -6,21 +6,26 @@ import World
 from Nodes.NodeBase import NodeBase
 
 class PanelWidget(NodeBase):
-    def __init__(self, world: World, position: tuple, pivot: tuple, size: tuple, color: tuple):
+    def __init__(self, world: World):
         super().__init__(world)
-        self.position = position
-        self.rotation = 0
-        self.scale = (1,1)
+        self.position = np.array([0,0])
 
-        self.size = size
-        self.color = color
-        self.pivot = pivot
+        self.size = np.array([100,100])
+        self.color = (255,0,0)
+        self.pivot = np.array([0,0])
 
         self.vertices = self.create_polygon_vertices()
+
+    def load(self, data):
+        super.load(data)
+        self.size = data.get("size") or self.size
+        self.color = data.get("color") or self.color
+        self.pivot = data.get("pivot") or self.pivot
+        self.vertices = data.get("vertices") or self.vertices
        
     def create_polygon_vertices(self):
         vertices = []
-        origin = (0,0)#(-self.pivot[0] * self.size[0],    -self.pivot[1] * self.size[1])
+        origin = (0,0)
         vertices.append((origin[0],                 origin[1]))
         vertices.append((origin[0] + self.size[0],  origin[1]))
         vertices.append((origin[0] + self.size[0],  origin[1] + self.size[1]))

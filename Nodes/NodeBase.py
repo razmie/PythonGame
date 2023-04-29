@@ -6,9 +6,12 @@ import World
 class NodeBase:
     game: Game = None
     world: World = None
-    position = np.array([0, 0])
-    rotation = 0
-    scale = np.array([1, 1])
+
+    name: str = "No Name"
+    position: np.array = np.array([0, 0])
+    rotation: float = 0
+    scale: np.array = np.array([1, 1])
+
     parent_node = None
 
     def __init__(self, world: World):
@@ -23,6 +26,12 @@ class NodeBase:
 
     def draw(self, surface: pygame.Surface):
         pass
+
+    def load(self, data):
+        self.name = data.get("name") or self.name
+        self.position = data.get("position") or self.position
+        self.rotation = data.get("rotation") or self.rotation
+        self.scale = data.get("scale") or self.scale
 
     def construct_matrix(self):
         trans_mat = np.array([[1, 0, self.position[0]], [0, 1, self.position[1]], [0, 0, 1]])

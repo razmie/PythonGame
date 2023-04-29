@@ -2,19 +2,17 @@ import numpy as np
 import pygame
 import World
 from Nodes.NodeBase import NodeBase
-from Renderer import Renderer
+from Renderer import RenderUtil
 
 class PointNode(NodeBase):
-    def __init__(self, new_world: World, new_position = np.array([0, 0]), new_size = 10, new_color = (0, 0, 255)):
-        super().__init__(new_world)
-        self.position = new_position
-        self.size = new_size
-        self.color = new_color
+    def __init__(self, world: World):
+        super().__init__(world)
+        self.position = np.array([0,0])
+        self.size = 10
+        self.color = (0, 0, 255)
 
     def load(self, data):
-        self.position = data.get("position") or self.position
-        self.scale = data.get("scale") or self.scale
-        self.rotation = data.get("rotation") or self.rotation
+        super().load(data)
         self.size = data.get("size") or self.size
         self.color = data.get("color") or self.color
 
@@ -24,7 +22,7 @@ class PointNode(NodeBase):
 
     def draw(self, surface: pygame.Surface):
         position = self.get_world_position()
-        Renderer.draw_point(self.world, position, self.size, self.color)
+        RenderUtil.draw_point(self.world, position, self.size, self.color)
 
     def get_world_position(self):
         mat_position = np.array([0, 0, 1])
