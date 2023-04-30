@@ -1,4 +1,4 @@
-from WorldScript import ScriptBase
+from ScriptBase import ScriptBase
 from World import World
 from Nodes.UI.ButtonWidget import ButtonWidget
 
@@ -13,7 +13,7 @@ class FrontendScript(ScriptBase):
 
     def on_button_click(self, button: ButtonWidget):
         if button.name == "test1":
-            self.game.load_level("Assets/Levels/world.json")
+            self.game.load_level("Assets/Levels/Worlds/PolygonCollisionTest/PolygonCollisionTest.json")
 
     def create_button(self, button_name: str, text: str):
         screen_size = self.world.game.screen.get_size()

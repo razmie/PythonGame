@@ -1,5 +1,6 @@
 import pygame
 import time
+import sys
 from Level import Level
 
 class Game:
@@ -23,8 +24,9 @@ class Game:
         self.clock = pygame.time.Clock()
         self.screen = pygame.display.set_mode([800, 600])
 
-        self.load_level("Assets/Levels/Frontend/Frontend.json")
-        #self.load_level("Assets/Levels/world.json")
+        level_name = Game.find_in_argument_variable("level")
+
+        self.load_level(level_name)
 
         while self.has_level_to_load:
             self.check_level_load()
@@ -69,3 +71,10 @@ class Game:
 
             self.level = Level(self, self.level_path)
             self.has_level_to_load = False
+
+    @staticmethod
+    def find_in_argument_variable(argument_name: str):
+        for arg in sys.argv:
+            if argument_name + "=" in arg:
+                return arg.split("=")[1]
+        return None

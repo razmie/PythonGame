@@ -1,3 +1,4 @@
+import pygame
 import Game
 import Level
 import World
@@ -11,4 +12,10 @@ class ScriptBase:
         self.world = world
         self.level = world.level
         self.game = world.game
+        pass
+
+    def update(self, deltaTime: float):
+        pass
+
+    def draw(self, surface: pygame.Surface):
         pass

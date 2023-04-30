@@ -10,14 +10,5 @@
         "FrontendScript.py"
     ],
     "nodes": [
-        {
-            "type": "PointNode",
-            "name": "PointNode1",
-            "position": [0, 0],
-            "scale": [1,1],
-            "rotation": -0.785398,
-            "size": 100,
-            "color": [255, 0, 0]
-        }
     ]
 }

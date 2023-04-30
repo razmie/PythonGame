@@ -8,7 +8,7 @@ import inspect
 import os
 from Camera import Camera
 from WorldAssets import WorldAssets
-from WorldScript import ScriptBase
+from ScriptBase import ScriptBase
 from Nodes.NodeBase import NodeBase
 from Nodes.PointNode import PointNode
 from Nodes.LineNode import LineNode
@@ -25,15 +25,15 @@ class World:
         self.assets = WorldAssets()
 
         self.nodes: NodeBase = []
+
         self.script_paths: list = []
+        self.scripts: ScriptBase = []
 
         self.load_point_from_json(world_file_path)
 
         for script_path in self.script_paths:
-            self.execute_script(script_path)
-
-    def click(self):
-        print("click")
+            script = self.execute_script(script_path)
+            self.scripts.append(script)
 
     def update(self, deltaTime: float):
         self.camera.update(deltaTime)
@@ -43,11 +43,14 @@ class World:
             node.update(deltaTime)
             node.draw(self.game.screen)
 
+        for script in self.scripts:
+            script.update(deltaTime)
+            script.draw(self.game.screen)
+
     def load_point_from_json(self, file_path: str):
         if file_path is None:
             return
-        if os.path.exists(file_path) == False:
-            return
+        assert os.path.exists(file_path)
         
         with open(file_path, 'r') as file:
             json_data = json.load(file)
@@ -86,7 +89,7 @@ class World:
             script_path = os.path.join(dir_path, name).replace("\\","/")
             self.script_paths.append(script_path)
 
-    def execute_script(self, script_path):
+    def execute_script(self, script_path) -> ScriptBase:
         # Import the module from the script file
         module_spec = importlib.util.spec_from_file_location('my_module', script_path)
         module = importlib.util.module_from_spec(module_spec)
@@ -99,4 +102,5 @@ class World:
                 break
 
         # Create an object from the MyClass class
-        my_object = FoundScriptClass(self)
+        script_object = FoundScriptClass(self)
+        return script_object

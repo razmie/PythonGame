@@ -2,7 +2,7 @@ import numpy as np
 import pygame
 import World
 from Nodes.NodeBase import NodeBase
-from Renderer import RenderUtil
+from RenderUtil import RenderUtil
 
 class LineNode(NodeBase):
     def __init__(self, new_world: World):
