@@ -36,14 +36,14 @@ class Camera:
 
         for event in self.game.cached_events:
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 1:
+                if event.button == 3:
                     self.panning = True
                     self.last_position = event.pos
 
                     # Cancel interpolation.
                     self.interpolating = False
             elif event.type == pygame.MOUSEBUTTONUP:
-                if event.button == 1:
+                if event.button == 3:
                     self.panning = False
 
                     #mouse_pos = pygame.mouse.get_pos()

@@ -2,7 +2,7 @@
     "fonts":[
     ],
     "script_names": [
-        "PolygonCollisionTest.py"
+        "PolyPointCollisionTest.py"
     ],
     "nodes": [
     ]

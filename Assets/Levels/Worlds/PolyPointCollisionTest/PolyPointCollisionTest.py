@@ -5,7 +5,7 @@ import World
 from Nodes.PolygonNode import PolygonNode
 from CollisionUtil import CollisionUtil
 
-class PolygonCollisionTest(ScriptBase):
+class PolyPointCollisionTest(ScriptBase):
     def __init__(self, world: World):
         super().__init__(world)
 
