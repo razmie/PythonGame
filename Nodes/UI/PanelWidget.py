@@ -6,10 +6,6 @@ import World
 from Nodes.NodeBase import NodeBase
 
 class PanelWidget(NodeBase):
-
-    draw_border: bool = False
-    border_color: tuple = (0,0,0)
-
     def __init__(self, world: World, name: str = None):
         super().__init__(world)
         self.name = name
@@ -20,6 +16,9 @@ class PanelWidget(NodeBase):
         self.pivot = np.array([0,0])
 
         self.vertices = self.create_polygon_vertices()
+
+        self.draw_border: bool = False
+        self.border_color: tuple = (0,0,0)
 
     def load(self, data):
         super.load(data)

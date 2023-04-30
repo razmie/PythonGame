@@ -8,29 +8,27 @@ class Camera:
     game: Game = None
     world: World = None
 
-    width = 0
-    height = 0
-    zoom = 1.0
-
-    zoom_limit = [0.5, 3]
-    zoom_vel = [1, 100]
-
-    position = np.array([0, 0])
-    last_position = np.array([0, 0])
-
-    panning = False
-
-    interpolating = False
-    interp_time = 0.1
-    interp_accum_time = 0.0
-    interp_position = np.array([0, 0])
-    interp_zoom = 1.0
-
     def __init__(self, new_world: World):
         self.world = new_world
         self.game = self.world.game
 
         self.width, self.height = self.game.screen.get_size()
+
+        self.zoom = 1.0
+
+        self.zoom_limit = [0.5, 3]
+        self.zoom_vel = [1, 100]
+
+        self.position = np.array([0, 0])
+        self.last_position = np.array([0, 0])
+
+        self.panning = False
+
+        self.interpolating = False
+        self.interp_time = 0.1
+        self.interp_accum_time = 0.0
+        self.interp_position = np.array([0, 0])
+        self.interp_zoom = 1.0
 
     def update(self, deltaTime: float):
         mouse_pos = pygame.mouse.get_pos()

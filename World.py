@@ -16,12 +16,6 @@ from Nodes.LineNode import LineNode
 class World:
     game: Game = None
     level: Level = None
-    camera: Camera = None
-
-    assets: WorldAssets = None
-
-    nodes: NodeBase = []
-    script_paths: list = []
 
     def __init__(self, level: Game, world_file_path: str = None):
         self.level = level
@@ -29,6 +23,9 @@ class World:
         self.camera = Camera(self)
 
         self.assets = WorldAssets()
+
+        self.nodes: NodeBase = []
+        self.script_paths: list = []
 
         self.load_point_from_json(world_file_path)
 

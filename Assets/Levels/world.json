@@ -1,33 +1,17 @@
 {
+    "fonts":[
+    ],
+    "script_names": [
+    ],
     "nodes": [
         {
             "type": "PointNode",
+            "name": "PointNode1",
             "position": [0, 0],
             "scale": [1,1],
-            "rotation": -0.785398,
+            "rotation": 0,
             "size": 10,
-            "color": [255, 0, 0],
-            "child_nodes": [
-                {
-                    "type": "PointNode",
-                    "position": [200, 0],
-                    "scale": [1,1],
-                    "rotation": 0.785398,
-                    "size": 10,
-                    "color": [0, 255, 0],
-                    "child_nodes": [
-                        {
-                            "type": "LineNode",
-                            "position": [0, 0],
-                            "end_position": [100, 0],
-                            "scale": [1,1],
-                            "rotation": 0,
-                            "size": 10,
-                            "color": [0, 0, 255]
-                        }
-                    ]
-                }
-            ]
+            "color": [0, 0, 255]
         }
     ]
 }

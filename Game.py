@@ -12,6 +12,7 @@ class Game:
 
     screen: pygame.Surface = None
 
+    has_level_to_load: bool = False
     level: Level = None
 
     cached_events: list = None
@@ -19,29 +20,36 @@ class Game:
     def __init__(self):
         pygame.init()
 
+        self.clock = pygame.time.Clock()
         self.screen = pygame.display.set_mode([800, 600])
 
-        self.level = Level(self, "Assets/Levels/Frontend/Frontend.json")
+        self.load_level("Assets/Levels/Frontend/Frontend.json")
+        #self.load_level("Assets/Levels/world.json")
 
-        clock = pygame.time.Clock()
-        running = True
+        while self.has_level_to_load:
+            self.check_level_load()
+            self.update_level()
 
-        while running:
+        pygame.quit()
+
+    def update_level(self):
+        self.level_running = True
+        while self.level_running and self.level:
             # Calculate delta time.
             self.currentTime = time.time()
             deltaTime = self.currentTime - self.lastFrameTime
             self.lastFrameTime = self.currentTime
 
-            clock.tick(self.FPS)
+            self.clock.tick(self.FPS)
 
             self.cached_events = pygame.event.get()
 
             for event in self.cached_events:
                 if event.type == pygame.QUIT:
-                    running = False
+                    self.level_running = False
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
-                        running = False
+                        self.level_running = False
 
             self.screen.fill((255, 255, 255))
 
@@ -49,4 +57,15 @@ class Game:
 
             pygame.display.flip()
 
-        pygame.quit()
+    def load_level(self, level_path: str):
+        self.level_path = level_path
+        self.has_level_to_load = True
+        self.level_running = False
+
+    def check_level_load(self):
+        if self.has_level_to_load == True:
+            if self.level != None:
+                del self.level
+
+            self.level = Level(self, self.level_path)
+            self.has_level_to_load = False

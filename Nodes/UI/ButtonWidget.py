@@ -14,12 +14,12 @@ class ButtonWidget(PanelWidget):
         MIDDLE = 2
         RIGHT = 3
 
-    justification = TextJustification.LEFT
-    padding = 8
-
     def __init__(self, world: World, name: str = None, on_click_delegate=None):
         super().__init__(world, name)
         self.on_click_delegate = on_click_delegate
+
+        self.justification = ButtonWidget.TextJustification.LEFT
+        self.padding = 8
 
     def set(self, position: np.array, size: np.array, color: tuple, font_id: str, text: str, text_color: tuple):
         self.position = position

@@ -6,17 +6,17 @@ import World
 class NodeBase:
     game: Game = None
     world: World = None
-
-    name: str = "No Name"
-    position: np.array = np.array([0, 0])
-    rotation: float = 0
-    scale: np.array = np.array([1, 1])
-
-    parent_node = None
-
+    
     def __init__(self, world: World):
         self.world = world
         self.game = world.game
+
+        self.name: str = "No Name"
+        self.position: np.array = np.array([0, 0])
+        self.rotation: float = 0
+        self.scale: np.array = np.array([1, 1])
+
+        self.parent_node = None
 
     def handle_events(self):
         pass

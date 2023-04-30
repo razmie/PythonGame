@@ -8,10 +8,8 @@ class FontAsset:
         self.font = pygame.font.Font(name, size)
 
 class WorldAssets:
-    fonts: list = {}
-
     def __init__(self):
-        pass
+        self.fonts: list = {}
 
     def add_font_asset(self, font_id: str, name: str, size: int):
         font_asset = FontAsset(name, size)
