@@ -6,6 +6,7 @@ import math
 import World
 from Nodes.UI.PanelWidget import PanelWidget
 from Nodes.NodeBase import NodeBase
+from RenderUtil import RenderUtil
 from CollisionUtil import CollisionUtil
 
 class ButtonWidget(PanelWidget):
@@ -47,7 +48,7 @@ class ButtonWidget(PanelWidget):
 
     def reconstruct_body(self):
         super().reconstruct_body()
-        bounds = self.get_polygon_bounds(self.rotated_vertices)
+        bounds = RenderUtil.get_polygon_bounds(self.rotated_vertices)
         
         self.rendered_rect = self.rendered_text.get_rect()
         min = np.array(bounds[0])

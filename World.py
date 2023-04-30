@@ -44,6 +44,7 @@ class World:
             node.draw(self.game.screen)
 
         for script in self.scripts:
+            script.handle_events()
             script.update(deltaTime)
             script.draw(self.game.screen)
 
@@ -104,3 +105,31 @@ class World:
         # Create an object from the MyClass class
         script_object = FoundScriptClass(self)
         return script_object
+    
+    def draw_point(self, position, size: int, color: pygame.color):
+        screen_pos = self.camera.world_to_screen(position)
+        screen_size = self.camera.world_to_screen_size(size)
+
+        # Draw circle on seperate surface to fix bug with draw circle.
+        circle_surface = pygame.Surface((screen_size*2, screen_size*2), pygame.SRCALPHA)
+        pygame.draw.circle(circle_surface, color, (screen_size, screen_size), screen_size)
+
+        self.game.screen.blit(circle_surface, (screen_pos[0] - screen_size, screen_pos[1] - screen_size))
+
+    def draw_line(self, start_position, end_position, width: int, color: pygame.color):
+        screen_start = self.camera.world_to_screen(start_position)
+        screen_end = self.camera.world_to_screen(end_position)
+        screen_width = int(self.camera.world_to_screen_size(width))
+        screen_width = max(screen_width, 1)
+
+        pygame.draw.line(self.game.screen, color, screen_start, screen_end, screen_width)
+
+    def draw_polygon(self, vertices, color: pygame.color):
+        if len(vertices) <= 2:
+            return
+        screen_vertices = []
+        for vertex in vertices:
+            screen_vertices.append(self.camera.world_to_screen(vertex))
+
+        if len(vertices) > 2:
+            pygame.gfxdraw.filled_polygon(self.game.screen, screen_vertices, color)

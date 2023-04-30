@@ -14,6 +14,9 @@ class ScriptBase:
         self.game = world.game
         pass
 
+    def handle_events(self):
+        pass
+
     def update(self, deltaTime: float):
         pass
 

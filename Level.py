@@ -9,8 +9,5 @@ class Level:
         self.game = new_game
         self.world = World(self, world_file_path)
 
-    def __del__(self):
-        del self.world
-
     def update(self, deltaTime: float):
         self.world.update(deltaTime)

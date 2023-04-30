@@ -7,15 +7,15 @@ class CollisionUtil:
     # the polygon; if it's even, the point is outside the polygon.
     # https://www.youtube.com/watch?v=RSXM9bgqxJM
     @staticmethod
-    def is_point_in_polygon(point: tuple, polygon: list[tuple]) -> bool:
+    def is_point_in_polygon(point: tuple, vertices: list[tuple]) -> bool:
         x, y = point
-        n = len(polygon)
+        n = len(vertices)
         inside = False
-        p1x, p1y = polygon[0]
+        p1x, p1y = vertices[0]
         inside_count = 0
 
         for i in range(n + 1):
-            p2x, p2y = polygon[i % n]
+            p2x, p2y = vertices[i % n]
             if y > min(p1y, p2y):
                 if y <= max(p1y, p2y):
                     if x <= max(p1x, p2x):

@@ -4,23 +4,24 @@ import World
 
 class RenderUtil:
     @staticmethod
-    def draw_point(world: World, position, size: int, color: pygame.color):
-        screen_pos = world.camera.world_to_screen(position)
-        screen_size = world.camera.world_to_screen_size(size)
-
-        # Draw circle on seperate surface to fix bug with draw circle.
-        circle_surface = pygame.Surface((screen_size*2, screen_size*2), pygame.SRCALPHA)
-        pygame.draw.circle(circle_surface, color, (screen_size, screen_size), screen_size)
-
-        world.game.screen.blit(circle_surface, (screen_pos[0] - screen_size, screen_pos[1] - screen_size))
-
-    def draw_line(world: World, start_position, end_position, width: int, color: pygame.color):
-        screen_start = world.camera.world_to_screen(start_position)
-        screen_end = world.camera.world_to_screen(end_position)
-        screen_width = int(world.camera.world_to_screen_size(width))
-        screen_width = max(screen_width, 1)
-
-        pygame.draw.line(world.game.screen, color, screen_start, screen_end, screen_width)
+    def get_polygon_bounds(vertices):
+        min_x = float('inf')
+        min_y = float('inf')
+        max_x = float('-inf')
+        max_y = float('-inf')
+        
+        for vertex in vertices:
+            x, y = vertex
+            if x < min_x:
+                min_x = x
+            if y < min_y:
+                min_y = y
+            if x > max_x:
+                max_x = x
+            if y > max_y:
+                max_y = y
+                
+        return ((min_x, min_y), (max_x, max_y))
 
     def lerp(self, p1, p2, f):
         return p1 + f * (p2 - p1)

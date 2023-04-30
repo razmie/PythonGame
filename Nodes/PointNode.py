@@ -22,7 +22,7 @@ class PointNode(NodeBase):
 
     def draw(self, surface: pygame.Surface):
         position = self.get_world_position()
-        RenderUtil.draw_point(self.world, position, self.size, self.color)
+        self.world.draw_point(position, self.size, self.color)
 
     def get_world_position(self):
         mat_position = np.array([0, 0, 1])

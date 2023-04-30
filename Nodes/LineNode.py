@@ -29,4 +29,4 @@ class LineNode(NodeBase):
         mat_position = self.get_matrix() @ mat_position
         end = np.array([mat_position[0], mat_position[1]])
 
-        RenderUtil.draw_line(self.world, start, end, self.width, self.color)
+        self.world.draw_line(self.world, start, end, self.width, self.color)
