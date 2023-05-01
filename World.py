@@ -10,8 +10,6 @@ from Camera import Camera
 from WorldAssets import WorldAssets
 from ScriptBase import ScriptBase
 from Nodes.NodeBase import NodeBase
-from Nodes.PointNode import PointNode
-from Nodes.LineNode import LineNode
 
 class World:
     game: Game = None
@@ -96,9 +94,11 @@ class World:
         module = importlib.util.module_from_spec(module_spec)
         module_spec.loader.exec_module(module)
 
+        FoundScriptClass = None
+
         # Get the class from the module that inherits from ParentClass
         for name, obj in inspect.getmembers(module):
-            if inspect.isclass(obj) and issubclass(obj, ScriptBase):
+            if name != "ScriptBase" and inspect.isclass(obj) and issubclass(obj, ScriptBase):
                 FoundScriptClass = obj
                 break
 

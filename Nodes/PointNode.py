@@ -2,7 +2,6 @@ import numpy as np
 import pygame
 import World
 from Nodes.NodeBase import NodeBase
-from RenderUtil import RenderUtil
 
 class PointNode(NodeBase):
     def __init__(self, world: World):

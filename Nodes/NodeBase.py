@@ -16,6 +16,9 @@ class NodeBase:
         self.rotation: float = 0
         self.scale: np.array = np.array([1, 1])
 
+        self.cached_matrix = None
+        self.cached_matrix_update_id = -1
+
         self.parent_node = None
 
     def handle_events(self):
@@ -41,6 +44,10 @@ class NodeBase:
         return trans_mat @ rot_mat @ scale_mat
     
     def get_matrix(self):
+
+        if self.cached_matrix_update_id == self.world.game.update_count:
+            return self.cached_matrix
+
         matrix = self.construct_matrix()
 
         parent_node = self.parent_node
@@ -48,7 +55,10 @@ class NodeBase:
             matrix = parent_node.construct_matrix() @ matrix
             parent_node = parent_node.parent_node
 
-        return matrix
+        self.cached_matrix = matrix
+        self.cached_matrix_update_id = self.world.game.update_count
+
+        return self.cached_matrix
         
         
 

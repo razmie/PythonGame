@@ -23,6 +23,7 @@ class Game:
 
         self.clock = pygame.time.Clock()
         self.screen = pygame.display.set_mode([800, 600])
+        self.update_count = 0
 
         level_name = Game.find_in_argument_variable("level")
 
@@ -56,6 +57,8 @@ class Game:
             self.screen.fill((255, 255, 255))
 
             self.level.update(deltaTime)
+
+            self.update_count += 1
 
             pygame.display.flip()
 
