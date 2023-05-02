@@ -124,6 +124,13 @@ class World:
 
         pygame.draw.line(self.game.screen, color, screen_start, screen_end, screen_width)
 
+    def draw_rect(self, rect, color: pygame.color, rect_width: int = 0):
+        pos = self.camera.world_to_screen(rect[0])
+        width = self.camera.world_to_screen_size(rect[1][0])
+        height = self.camera.world_to_screen_size(rect[1][1])
+
+        pygame.draw.rect(self.game.screen, color, ((pos[0],pos[1]),(width,height)), rect_width)
+
     def draw_polygon(self, vertices, color: pygame.color):
         if len(vertices) <= 2:
             return

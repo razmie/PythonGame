@@ -13,6 +13,7 @@ class PolygonNode(Nodes.NodeBase.NodeBase):
         self.world_vertices = []
         self.pivot = np.array([0,0])
         self.color = (0,0,0)
+        self.bounds = ((0,0), (0,0))
 
     def construct_matrix(self):
         trans_mat = np.array([[1, 0, self.position[0]], [0, 1, self.position[1]], [0, 0, 1]])
@@ -48,3 +49,5 @@ class PolygonNode(Nodes.NodeBase.NodeBase):
             mat_position = np.array([self.vertices[i][0], self.vertices[i][1], 1])
             mat_position = self.get_matrix() @ mat_position
             self.world_vertices.append((mat_position[0], mat_position[1]))
+
+        self.bounds = RenderUtil.get_polygon_bounds(self.world_vertices)
