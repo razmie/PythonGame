@@ -8,10 +8,10 @@ class CollisionUtil:
     # the polygon; if it's even, the point is outside the polygon.
     # https://www.youtube.com/watch?v=RSXM9bgqxJM
     @staticmethod
-    def is_point_in_polygon(point: tuple, vertices: list[tuple]) -> bool:
+    def is_point_in_polygon(point, vertices) -> bool:
         x, y = point
         n = len(vertices)
-        inside = False
+
         p1x, p1y = vertices[0]
         inside_count = 0
 
@@ -29,6 +29,7 @@ class CollisionUtil:
         return inside_count % 2 == 1 
     
     @staticmethod
+    # Checks if boxes are intersecting using axis-aligned bounding boxes
     def are_bounding_boxes_inside(box1: tuple, box2: tuple):
         if box1[1][0] < box2[0][0] or box1[0][0] > box2[1][0]:
             return False

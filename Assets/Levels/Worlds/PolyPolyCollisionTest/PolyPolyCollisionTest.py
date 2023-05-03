@@ -6,6 +6,7 @@ from Nodes.NodeBase import NodeBase
 from Nodes.PolygonNode import PolygonNode
 from CollisionUtil import CollisionUtil
 from RenderUtil import RenderUtil
+from GTK import GTK
 
 class PolyDragger(NodeBase):
     def __init__(self, world: World):
@@ -110,6 +111,9 @@ class PolyPolyCollisionTest(ScriptBase):
                 polygon1, dragger1 = poly_info1
                 polygon2, dragger2 = poly_info2
 
+                ##coll = GTK.intersect(polygon1.world_vertices, polygon2.world_vertices)
+                #print(coll)
+
                 if CollisionUtil.are_bounding_boxes_inside(polygon1.bounds, polygon2.bounds):
                     dragger1.bounds_colliding = True
                     dragger2.bounds_colliding = True
@@ -145,4 +149,3 @@ class PolyPolyCollisionTest(ScriptBase):
             if dragger.bounds_colliding:
                 rect = (polygon.bounds[0],(polygon.bounds[1][0]-polygon.bounds[0][0],(polygon.bounds[1][1]-polygon.bounds[0][1])))
                 self.world.draw_rect(rect, (0,0,0), 2)
-        
