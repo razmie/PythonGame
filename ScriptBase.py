@@ -1,6 +1,4 @@
 import pygame
-import Game
-import Level
 import World
 
 class ScriptBase:

@@ -1,7 +1,8 @@
 from ScriptBase import ScriptBase
 import pygame
-import numpy as np
 import World
+from Maths import Vector2
+from Input import Input
 from Nodes.PolygonNode import PolygonNode
 from CollisionUtil import CollisionUtil
 
@@ -9,42 +10,42 @@ class PolyPointCollisionTest(ScriptBase):
     def __init__(self, world: World):
         super().__init__(world)
 
-        self.world.camera.position = np.array([0,0])
+        self.world.camera.position = Vector2(0,0)
 
         self.polygon1 = PolygonNode(world)
         vertices = [
-            [0,0],
-            [100,0],
-            [100,100],
-            [0,100]
+            Vector2(0,0),
+            Vector2(100,0),
+            Vector2(100,100),
+            Vector2(0,100)
         ]
-        self.polygon1.set((-200,-200), vertices, (0.5,0.5), (0,0,255))
+        self.polygon1.set(Vector2(-200,-200), vertices, Vector2(0.5,0.5), (0,0,255))
         self.world.nodes.append(self.polygon1)
 
         self.polygon2 = PolygonNode(world)
         vertices = [
-            [0,0],
-            [100,-50],
-            [150,100],
-            [50,150],
-            [-50,100]
+            Vector2(0,0),
+            Vector2(100,-50),
+            Vector2(150,100),
+            Vector2(50,150),
+            Vector2(-50,100)
         ]
-        self.polygon2.set((250,-100), vertices, (0.5,0.5), (0,0,255))
+        self.polygon2.set(Vector2(250,-100), vertices, Vector2(0.5,0.5), (0,0,255))
         self.world.nodes.append(self.polygon2)
 
         self.polygon3 = PolygonNode(world)
         vertices = [
-            [0,0],
-            [100,-50],
-            [200,0],
-            [250,100],
-            [220,140],
-            [150,50],
-            [100,20],
-            [50,100],
-            [-20,130],
+            Vector2(0,0),
+            Vector2(100,-50),
+            Vector2(200,0),
+            Vector2(250,100),
+            Vector2(220,140),
+            Vector2(150,50),
+            Vector2(100,20),
+            Vector2(50,100),
+            Vector2(-20,130),
         ]
-        self.polygon3.set((-100,100), vertices, (0.5,0.5), (0,0,255))
+        self.polygon3.set(Vector2(-100,100), vertices, Vector2(0.5,0.5), (0,0,255))
         self.world.nodes.append(self.polygon3)
 
     def handle_events(self):
@@ -54,7 +55,7 @@ class PolyPointCollisionTest(ScriptBase):
                     self.game.load_level("Assets/Levels/Frontend/Frontend.json")
 
     def update(self, deltaTime: float):
-        mouse_position = pygame.mouse.get_pos()
+        mouse_position = Input.get_mouse_position()
         self.world_mouse_position = self.world.camera.screen_to_world(mouse_position)
 
         poly_info_list = [

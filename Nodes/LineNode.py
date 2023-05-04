@@ -1,14 +1,13 @@
-import numpy as np
 import pygame
 import World
+from Maths import Vector2
 from Nodes.NodeBase import NodeBase
-from RenderUtil import RenderUtil
 
 class LineNode(NodeBase):
     def __init__(self, new_world: World):
         super().__init__(new_world)
-        self.position = np.array([0,0])
-        self.end_position = np.array([100,100])
+        self.position = Vector2(0,0)
+        self.end_position = Vector2(100,100)
         self.width = 1
         self.color = (0, 0, 255)
 
@@ -22,11 +21,10 @@ class LineNode(NodeBase):
         pass
 
     def draw(self, surface: pygame.Surface):
-        mat_position = np.array([0, 0, 1])
-        mat_position = self.get_matrix() @ mat_position
-        start = np.array([mat_position[0], mat_position[1]])
-        mat_position = np.array([self.end_position[0], self.end_position[1], 1])
-        mat_position = self.get_matrix() @ mat_position
-        end = np.array([mat_position[0], mat_position[1]])
+        start= Vector2(0, 0)
+        start = self.get_matrix() @ start
+
+        end = Vector2(self.end_position[0], self.end_position[1])
+        end = self.get_matrix() @ end
 
         self.world.draw_line(self.world, start, end, self.width, self.color)

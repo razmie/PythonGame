@@ -1,4 +1,5 @@
 from math import sqrt
+from Maths import Vector2
 
 class CollisionUtil:
     # Checks if a point is inside a polygon.
@@ -8,43 +9,42 @@ class CollisionUtil:
     # the polygon; if it's even, the point is outside the polygon.
     # https://www.youtube.com/watch?v=RSXM9bgqxJM
     @staticmethod
-    def is_point_in_polygon(point, vertices) -> bool:
-        x, y = point
+    def is_point_in_polygon(point: Vector2, vertices: list[Vector2]) -> bool:
         n = len(vertices)
 
-        p1x, p1y = vertices[0]
+        p1 = vertices[0]
         inside_count = 0
 
         for i in range(n + 1):
-            p2x, p2y = vertices[i % n]
-            if y > min(p1y, p2y):
-                if y <= max(p1y, p2y):
-                    if x <= max(p1x, p2x):
+            p2 = vertices[i % n]
+            if point.y > min(p1.y, p2.y):
+                if point.y <= max(p1.y, p2.y):
+                    if point.x <= max(p1.x, p2.x):
                         # Find x intersection betwen horizontal line starting from x and the polygon line.
-                        xinters = (y - p1y) / (p2y - p1y) * (p2x - p1x) + p1x
-                        if x <= xinters:
+                        xinters = (point.y - p1.y) / (p2.y - p1.y) * (p2.x - p1.x) + p1.x
+                        if point.x <= xinters:
                             inside_count += 1
-            p1x, p1y = p2x, p2y
+            p1 = p2
 
         return inside_count % 2 == 1 
     
     @staticmethod
     # Checks if boxes are intersecting using axis-aligned bounding boxes
     def are_bounding_boxes_inside(box1: tuple, box2: tuple):
-        if box1[1][0] < box2[0][0] or box1[0][0] > box2[1][0]:
+        if box1[1].x < box2[0].x or box1[0].x > box2[1].x:
             return False
-        if box1[1][1] < box2[0][1] or box1[0][1] > box2[1][1]:
+        if box1[1].y < box2[0].y or box1[0].y > box2[1].y:
             return False
         return True
     
     @staticmethod
-    def project_polygon_onto_axis(vertices, axis):
+    def project_polygon_onto_axis(vertices, axis: Vector2):
         # Project the polygon onto the axis.
         min = float('inf')
         max = float('-inf')
         for vertex in vertices:
             # Project the vertex onto the axis.
-            projection = vertex[0] * axis[0] + vertex[1] * axis[1]
+            projection = vertex.x * axis.x + vertex.y * axis.y
             # Update the min and max values.
             if projection < min:
                 min = projection
@@ -62,9 +62,9 @@ class CollisionUtil:
             p1 = vertices1[i]
             p2 = vertices1[(i + 1) % len(vertices1)]
             # Subtract the two to get the edge vector.
-            edge = (p1[0] - p2[0], p1[1] - p2[1])
+            edge = Vector2(p1.x - p2.x, p1.y - p2.y)
             # Get the perpendicular vector.
-            axis = (-edge[1], edge[0])
+            axis = Vector2(-edge.y, edge.x)
             # Project both polygons onto the axis.
             min1, max1 = CollisionUtil.project_polygon_onto_axis(vertices1, axis)
             min2, max2 = CollisionUtil.project_polygon_onto_axis(vertices2, axis)

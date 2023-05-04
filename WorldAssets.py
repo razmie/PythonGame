@@ -1,4 +1,3 @@
-import World
 import pygame
 
 class FontAsset:

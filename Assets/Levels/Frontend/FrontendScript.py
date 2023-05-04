@@ -1,5 +1,6 @@
 from ScriptBase import ScriptBase
 from World import World
+from Maths import Vector2
 from Nodes.UI.ButtonWidget import ButtonWidget
 
 class FrontendScript(ScriptBase):
@@ -27,7 +28,7 @@ class FrontendScript(ScriptBase):
         button_height = 24
 
         self.widget = ButtonWidget(self.world, button_name, self.on_button_click)
-        self.widget.set([0, self.button_count * button_height], [screen_size[0], button_height], (255, 255, 255), "font1_20", text, (255, 255, 255))
+        self.widget.set(Vector2(0, self.button_count * button_height), Vector2(screen_size[0], button_height), (255, 255, 255), "font1_20", text, (255, 255, 255))
         self.widget.draw_border = True
         self.widget.border_color = (127, 127, 127)
         self.world.nodes.append(self.widget)

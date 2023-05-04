@@ -1,5 +1,3 @@
-import numpy as np
-import inspect
 import World
 from Nodes.NodeBase import NodeBase
 from Nodes.Physics.PointPhsxBody import PointPhsxBody

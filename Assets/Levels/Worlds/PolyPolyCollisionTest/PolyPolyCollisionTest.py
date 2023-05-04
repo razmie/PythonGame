@@ -1,11 +1,13 @@
 from ScriptBase import ScriptBase
 import pygame
-import numpy as np
 import World
+from Input import Input
+from Maths import Vector2
 from Nodes.NodeBase import NodeBase
 from Nodes.PolygonNode import PolygonNode
 from CollisionUtil import CollisionUtil
 from RenderUtil import RenderUtil
+from Maths import Vector2
 from GTK import GTK
 
 class PolyDragger(NodeBase):
@@ -16,23 +18,23 @@ class PolyDragger(NodeBase):
         self.dragging = False
         self.bounds_colliding = False
         self.colliding = False
-        self.click_offset = np.array([0,0])
+        self.click_offset = Vector2(0,0)
 
 class PolyPolyCollisionTest(ScriptBase):
     def __init__(self, world: World):
         super().__init__(world)
 
-        self.world.camera.position = np.array([0,0])
+        self.world.camera.position = Vector2(0,0)
         self.mouse_down = False
 
         self.polygon1 = PolygonNode(world)
         vertices = [
-            [0,0],
-            [100,0],
-            [100,100],
-            [0,100]
+            Vector2(0,0),
+            Vector2(100,0),
+            Vector2(100,100),
+            Vector2(0,100)
         ]
-        self.polygon1.set((-200,-200), vertices, (0.5,0.5), RenderUtil.GREEN)
+        self.polygon1.set(Vector2(-200,-200), vertices, Vector2(0.5,0.5), RenderUtil.GREEN)
         self.world.nodes.append(self.polygon1)
 
         self.polyDragger1 = PolyDragger(world)
@@ -40,14 +42,14 @@ class PolyPolyCollisionTest(ScriptBase):
 
         self.polygon2 = PolygonNode(world)
         vertices = [
-            [0,0],
-            [100,-50],
-            [150,100],
-            [50,150],
-            [-50,100]
+            Vector2(0,0),
+            Vector2(100,-50),
+            Vector2(150,100),
+            Vector2(50,150),
+            Vector2(-50,100)
         ]
         self.polygon2.rotation = 0.5
-        self.polygon2.set((250,-100), vertices, (0.5,0.5), RenderUtil.GREEN)
+        self.polygon2.set(Vector2(250,-100), vertices, Vector2(0.5,0.5), RenderUtil.GREEN)
         self.world.nodes.append(self.polygon2)
 
         self.polyDragger2 = PolyDragger(world)
@@ -82,7 +84,7 @@ class PolyPolyCollisionTest(ScriptBase):
                             dragger.dragging = False
 
     def update(self, deltaTime: float):
-        mouse_position = pygame.mouse.get_pos()
+        mouse_position = Input.get_mouse_position()
         self.world_mouse_position = self.world.camera.screen_to_world(mouse_position)
 
         for poly_info in self.poly_info_list:
@@ -147,5 +149,5 @@ class PolyPolyCollisionTest(ScriptBase):
             polygon, dragger = poly_info
 
             if dragger.bounds_colliding:
-                rect = (polygon.bounds[0],(polygon.bounds[1][0]-polygon.bounds[0][0],(polygon.bounds[1][1]-polygon.bounds[0][1])))
+                rect = (polygon.bounds[0], (polygon.bounds[1].x-polygon.bounds[0].x, (polygon.bounds[1].y-polygon.bounds[0].y)))
                 self.world.draw_rect(rect, (0,0,0), 2)

@@ -1,6 +1,5 @@
-import numpy as np
 import pygame
-import World
+from Maths import Vector2
 
 class RenderUtil:
     RED = (255,0,0)
@@ -17,17 +16,16 @@ class RenderUtil:
         max_y = float('-inf')
         
         for vertex in vertices:
-            x, y = vertex
-            if x < min_x:
-                min_x = x
-            if y < min_y:
-                min_y = y
-            if x > max_x:
-                max_x = x
-            if y > max_y:
-                max_y = y
+            if vertex.x < min_x:
+                min_x = vertex.x
+            if vertex.y < min_y:
+                min_y = vertex.y
+            if vertex.x > max_x:
+                max_x = vertex.x
+            if vertex.y > max_y:
+                max_y = vertex.y
                 
-        return ((min_x, min_y), (max_x, max_y))
+        return Vector2(min_x, min_y), Vector2(max_x, max_y)
 
     def lerp(self, p1, p2, f):
         return p1 + f * (p2 - p1)

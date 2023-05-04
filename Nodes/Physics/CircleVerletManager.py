@@ -1,6 +1,5 @@
-import numpy as np
-import inspect
 import World
+from Maths import Vector2
 from Nodes.NodeBase import NodeBase
 from Nodes.Physics.PointPhsxBody import PointPhsxBody
 
@@ -41,17 +40,17 @@ class CircleVerletManager(NodeBase):
 
     def apply_gravity(self):
         for node in self.phsx_nodes:
-            self.accelerate_node(node, np.array([0, 9.81]))         
+            self.accelerate_node(node, Vector2(0, 9.81))         
 
     def apply_constraints(self):
-        origin = np.array([0, 0])
+        origin = Vector2(0, 0)
         radius = 200
 
         for node in self.phsx_nodes:
             # Get vector from origin to node.
             to_node = node.new_position - origin
             # Get the distance from the origin to the node.
-            distance = np.linalg.norm(to_node)
+            distance = to_node.length()
 
             if distance > radius - node.size:
                 # Get the normalized vector from the origin to the node.
@@ -69,13 +68,13 @@ class CircleVerletManager(NodeBase):
                 # Get vector from node a to node b.
                 atob = node_b.new_position - node_a.new_position
                 # Get the distance from node a to node b.
-                distance = np.linalg.norm(atob)
+                distance = atob.length()
 
                 # If node a and node b are overlapping excatly, move node b a tiny bit.
                 if distance == 0.0:
-                    node_b.new_position = node_b.new_position + np.array([0.001, 0.001])
+                    node_b.new_position = node_b.new_position + Vector2(0.001, 0.001)
                     atob = node_b.new_position - node_a.new_position
-                    distance = np.linalg.norm(atob)
+                    distance = atob.length()
 
                 if distance < node_a.size + node_b.size:
                     # Get the normalized vector from node a to node b.
@@ -101,8 +100,8 @@ class CircleVerletManager(NodeBase):
         # Perform verlet integration.
         node.new_position = node.new_position + (velocity + node.acceleration * deltaTime * deltaTime)
         # Reset acceleration to 0.
-        node.acceleration = np.array([0, 0])
+        node.acceleration = Vector2(0, 0)
 
-    def accelerate_node(self, node: PointPhsxBody, acceleration: np.ndarray):
+    def accelerate_node(self, node: PointPhsxBody, acceleration: Vector2):
         node.acceleration = node.acceleration + acceleration * node.mass
 

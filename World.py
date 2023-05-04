@@ -1,11 +1,7 @@
-import pygame
-import Level
-import Game
-import json
-import os
-import importlib
-import inspect
-import os
+import pygame, pygame.gfxdraw
+import os, importlib, inspect, json
+import Game, Level
+from Maths import Maths
 from Camera import Camera
 from WorldAssets import WorldAssets
 from ScriptBase import ScriptBase
@@ -114,7 +110,7 @@ class World:
         circle_surface = pygame.Surface((screen_size*2, screen_size*2), pygame.SRCALPHA)
         pygame.draw.circle(circle_surface, color, (screen_size, screen_size), screen_size)
 
-        self.game.screen.blit(circle_surface, (screen_pos[0] - screen_size, screen_pos[1] - screen_size))
+        self.game.screen.blit(circle_surface, (screen_pos.x - screen_size, screen_pos.y - screen_size))
 
     def draw_line(self, start_position, end_position, width: int, color: pygame.color):
         screen_start = self.camera.world_to_screen(start_position)
@@ -129,14 +125,15 @@ class World:
         width = self.camera.world_to_screen_size(rect[1][0])
         height = self.camera.world_to_screen_size(rect[1][1])
 
-        pygame.draw.rect(self.game.screen, color, ((pos[0],pos[1]),(width,height)), rect_width)
+        pygame.draw.rect(self.game.screen, color, ((pos.x, pos.y), (width,height)), rect_width)
 
     def draw_polygon(self, vertices, color: pygame.color):
         if len(vertices) <= 2:
             return
+        
         screen_vertices = []
         for vertex in vertices:
             screen_vertices.append(self.camera.world_to_screen(vertex))
 
         if len(vertices) > 2:
-            pygame.gfxdraw.filled_polygon(self.game.screen, screen_vertices, color)
+            pygame.gfxdraw.filled_polygon(self.game.screen, Maths.get_vertices(screen_vertices), color)

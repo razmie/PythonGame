@@ -1,8 +1,7 @@
-import pygame
-import pygame.gfxdraw
-import numpy as np
-import Nodes.NodeBase
+import math
 import World
+from Maths import Vector2, Matrix3x3
+import Nodes.NodeBase
 from RenderUtil import RenderUtil
 
 class PolygonNode(Nodes.NodeBase.NodeBase):
@@ -11,26 +10,26 @@ class PolygonNode(Nodes.NodeBase.NodeBase):
 
         self.vertices = []
         self.world_vertices = []
-        self.pivot = np.array([0,0])
+        self.pivot = Vector2(0,0)
         self.color = (0,0,0)
         self.bounds = ((0,0), (0,0))
 
     def construct_matrix(self):
-        trans_mat = np.array([[1, 0, self.position[0]], [0, 1, self.position[1]], [0, 0, 1]])
-        rot_mat = np.array([[np.cos(self.rotation), -np.sin(self.rotation), 0], [np.sin(self.rotation), np.cos(self.rotation), 0], [0, 0, 1]])
-        scale_mat = np.array([[self.scale[0], 0, 0], [0, self.scale[1], 0], [0, 0, 1]])
+        trans_mat = Matrix3x3([[1, 0, self.position.x], [0, 1, self.position.y], [0, 0, 1]])
+        rot_mat = Matrix3x3([[math.cos(self.rotation), -math.sin(self.rotation), 0], [math.sin(self.rotation), math.cos(self.rotation), 0], [0, 0, 1]])
+        scale_mat = Matrix3x3([[self.scale.x, 0, 0], [0, self.scale.y, 0], [0, 0, 1]])
 
         bounds = RenderUtil.get_polygon_bounds(self.vertices)
-        size = ((bounds[1][0] - bounds[0][0]), (bounds[1][1] - bounds[0][1]))
-        pivot = (-self.pivot[0] * size[0], -self.pivot[1] * size[1])
-        pivot_mat = np.array([[1, 0, pivot[0]], [0, 1, pivot[1]], [0, 0, 1]])
+        size = Vector2(bounds[1].x - bounds[0].x, bounds[1].y - bounds[0].y)
+        pivot = Vector2(-self.pivot.x * size.x, -self.pivot.x * size.y)
+        pivot_mat = Matrix3x3([[1, 0, pivot.x], [0, 1, pivot.y], [0, 0, 1]])
 
         return trans_mat @ rot_mat @ scale_mat @ pivot_mat
     
-    def set(self, position: np.array, vertices: list, pivot: tuple, color: tuple):
+    def set(self, position: Vector2, vertices: list[Vector2], pivot: Vector2, color: tuple):
         self.position = position
         self.vertices = vertices
-        self.pivot = np.array(pivot)
+        self.pivot = pivot
         self.color = color
 
         self.reconstruct_body()
@@ -46,8 +45,7 @@ class PolygonNode(Nodes.NodeBase.NodeBase):
     def reconstruct_body(self):
         self.world_vertices = []
         for i in range(len(self.vertices)):
-            mat_position = np.array([self.vertices[i][0], self.vertices[i][1], 1])
-            mat_position = self.get_matrix() @ mat_position
-            self.world_vertices.append((mat_position[0], mat_position[1]))
+            position = self.get_matrix() @ self.vertices[i]
+            self.world_vertices.append(position)
 
         self.bounds = RenderUtil.get_polygon_bounds(self.world_vertices)

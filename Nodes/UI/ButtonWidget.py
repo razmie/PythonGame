@@ -1,11 +1,8 @@
-import pygame
-import pygame.gfxdraw
-import numpy as np
+import pygame, pygame.gfxdraw
 from enum import Enum
-import math
 import World
+from Maths import Vector2
 from Nodes.UI.PanelWidget import PanelWidget
-from Nodes.NodeBase import NodeBase
 from RenderUtil import RenderUtil
 from CollisionUtil import CollisionUtil
 
@@ -22,7 +19,7 @@ class ButtonWidget(PanelWidget):
         self.justification = ButtonWidget.TextJustification.LEFT
         self.padding = 8
 
-    def set(self, position: np.array, size: np.array, color: tuple, font_id: str, text: str, text_color: tuple):
+    def set(self, position: Vector2, size: Vector2, color: tuple, font_id: str, text: str, text_color: tuple):
         self.position = position
         self.size = size
         self.color = color
@@ -37,7 +34,7 @@ class ButtonWidget(PanelWidget):
         super().handle_events()
         for event in self.game.cached_events:
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                if CollisionUtil.is_point_in_polygon(event.pos, self.rotated_vertices):
+                if CollisionUtil.is_point_in_polygon(Vector2(event.pos[0], event.pos[1]), self.rotated_vertices):
                     if self.on_click_delegate:
                         self.on_click_delegate(self)
 
@@ -51,17 +48,17 @@ class ButtonWidget(PanelWidget):
         bounds = RenderUtil.get_polygon_bounds(self.rotated_vertices)
         
         self.rendered_rect = self.rendered_text.get_rect()
-        min = np.array(bounds[0])
-        max = np.array(bounds[1])
+        min = bounds[0]
+        max = bounds[1]
 
         if self.justification == ButtonWidget.TextJustification.LEFT:
-            text_pos = (self.padding + min[0], min[1] + (max[1] - min[1]) * 0.5)
+            text_pos = (self.padding + min.x, min.y + (max.y - min.y) * 0.5)
             self.rendered_rect.midleft = text_pos 
         elif self.justification == ButtonWidget.TextJustification.MIDDLE:
-            text_pos = (min[0] + (max[0] - min[0]) * 0.5, min[1] + (max[1] - min[1]) * 0.5)
+            text_pos = (min.x + (max.x - min.x) * 0.5, min.y + (max.y - min.y) * 0.5)
             self.rendered_rect.center = text_pos
         elif self.justification == ButtonWidget.TextJustification.RIGHT:
-            text_pos = (max[0] - self.padding, min[1] + (max[1] - min[1]) * 0.5)
+            text_pos = (max.x - self.padding, min.y + (max.y - min.y) * 0.5)
             self.rendered_rect.midright = text_pos
 
 

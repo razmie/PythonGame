@@ -1,12 +1,12 @@
-import numpy as np
 import pygame
 import World
+from Maths import Vector2
 from Nodes.NodeBase import NodeBase
 
 class PointNode(NodeBase):
     def __init__(self, world: World):
         super().__init__(world)
-        self.position = np.array([0,0])
+        self.position = Vector2(0,0)
         self.size = 10
         self.color = (0, 0, 255)
 
@@ -24,6 +24,6 @@ class PointNode(NodeBase):
         self.world.draw_point(position, self.size, self.color)
 
     def get_world_position(self):
-        mat_position = np.array([0, 0, 1])
-        mat_position = self.get_matrix() @ mat_position
-        return np.array([mat_position[0], mat_position[1]])
+        position = Vector2(0, 0)
+        position = self.get_matrix() @ position
+        return position
