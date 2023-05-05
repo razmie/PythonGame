@@ -35,7 +35,8 @@ class World:
         for node in self.nodes:
             node.handle_events()
             node.update(deltaTime)
-            node.draw(self.game.screen)
+            if node.can_draw:
+                node.draw(self.game.screen)
 
         for script in self.scripts:
             script.handle_events()

@@ -5,20 +5,11 @@ from Input import Input
 from Maths import Vector2
 from Nodes.NodeBase import NodeBase
 from Nodes.PolygonNode import PolygonNode
+from Nodes.Physics.PolygonDragger import PolygonDragger
 from CollisionUtil import CollisionUtil
 from RenderUtil import RenderUtil
 from Maths import Vector2
 from GTK import GTK
-
-class PolyDragger(NodeBase):
-    def __init__(self, world: World):
-        super().__init__(world)
-
-        self.hovering = False
-        self.dragging = False
-        self.bounds_colliding = False
-        self.colliding = False
-        self.click_offset = Vector2(0,0)
 
 class PolyPolyCollisionTest(ScriptBase):
     def __init__(self, world: World):
@@ -37,7 +28,8 @@ class PolyPolyCollisionTest(ScriptBase):
         self.polygon1.set(Vector2(-200,-200), vertices, Vector2(0.5,0.5), RenderUtil.GREEN)
         self.world.nodes.append(self.polygon1)
 
-        self.polyDragger1 = PolyDragger(world)
+        self.polyDragger1 = PolygonDragger(world)
+        self.polyDragger1.parent_node = self.polygon1
         self.world.nodes.append(self.polyDragger1)
 
         self.polygon2 = PolygonNode(world)
@@ -52,7 +44,8 @@ class PolyPolyCollisionTest(ScriptBase):
         self.polygon2.set(Vector2(250,-100), vertices, Vector2(0.5,0.5), RenderUtil.GREEN)
         self.world.nodes.append(self.polygon2)
 
-        self.polyDragger2 = PolyDragger(world)
+        self.polyDragger2 = PolygonDragger(world)
+        self.polyDragger2.parent_node = self.polygon2
         self.world.nodes.append(self.polyDragger2)
 
         self.poly_info_list = [
@@ -87,22 +80,6 @@ class PolyPolyCollisionTest(ScriptBase):
         mouse_position = Input.get_mouse_position()
         self.world_mouse_position = self.world.camera.screen_to_world(mouse_position)
 
-        for poly_info in self.poly_info_list:
-            polygon, dragger = poly_info
-
-            if CollisionUtil.is_point_in_polygon(self.world_mouse_position, polygon.world_vertices):
-                if dragger.hovering == False:
-                    dragger.hovering = True
-                    polygon.color = RenderUtil.BLUE
-            else:
-                if dragger.hovering:
-                    dragger.hovering = False
-                    polygon.color = RenderUtil.GREEN
-
-            if dragger.dragging:
-                polygon.position = self.world_mouse_position + dragger.click_offset
-                polygon.reconstruct_body()
-
         # Do collision detection
         poly_count = len(self.poly_info_list)
         for i in range(poly_count):
@@ -131,7 +108,6 @@ class PolyPolyCollisionTest(ScriptBase):
                     dragger1.colliding = False
                     dragger2.bounds_colliding = False
                     dragger2.colliding = False
-            
 
         for poly_info in self.poly_info_list:
             polygon, dragger = poly_info
@@ -141,7 +117,10 @@ class PolyPolyCollisionTest(ScriptBase):
             elif dragger.dragging or dragger.hovering:
                 polygon.color = RenderUtil.BLUE
             else:
-                polygon.color = RenderUtil.GREEN
+                if dragger.hovering:
+                    polygon.color = RenderUtil.BLUE
+                else:
+                    polygon.color = RenderUtil.GREEN
                 
 
     def draw(self, surface: pygame.Surface):
