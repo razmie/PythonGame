@@ -27,7 +27,7 @@ class PhysicsManager(NodeBase):
         for i in range(substeps):
             self.apply_gravity()
             #self.apply_constraints()
-            self.solve_collisions()
+            #self.solve_collisions()
             self.update_nodes(subdt)
 
     def get_physics_nodes(self):

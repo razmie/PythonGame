@@ -16,7 +16,6 @@ class PolyPolyCollisionTest(ScriptBase):
         super().__init__(world)
 
         self.world.camera.position = Vector2(0,0)
-        self.mouse_down = False
 
         self.polygon1 = PolygonNode(world)
         vertices = [
@@ -58,28 +57,8 @@ class PolyPolyCollisionTest(ScriptBase):
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_BACKSPACE:
                     self.game.load_level("Assets/Levels/Frontend/Frontend.json")
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 1:
-                    self.mouse_down = True
-
-                    for poly_info in self.poly_info_list:
-                        polygon, dragger = poly_info
-                        if dragger.hovering:
-                            dragger.click_offset = polygon.position - self.world_mouse_position
-                            dragger.dragging = True
-            if event.type == pygame.MOUSEBUTTONUP:
-                if event.button == 1:
-                    self.mouse_down = False
-
-                    for poly_info in self.poly_info_list:
-                        polygon, dragger = poly_info
-                        if dragger.dragging:
-                            dragger.dragging = False
 
     def update(self, deltaTime: float):
-        mouse_position = Input.get_mouse_position()
-        self.world_mouse_position = self.world.camera.screen_to_world(mouse_position)
-
         # Do collision detection
         poly_count = len(self.poly_info_list)
         for i in range(poly_count):

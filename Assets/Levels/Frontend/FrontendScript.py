@@ -12,7 +12,7 @@ class FrontendScript(ScriptBase):
         self.create_button("test1", "Polygon & Point Collision Test")
         self.create_button("test2", "Polygon & Polygon Collision Test")
         self.create_button("test3", "Verlet Physics Test")
-        self.create_button("test3", "Physics Test")
+        self.create_button("test4", "Physics Test")
 
     def on_button_click(self, button: ButtonWidget):
         if button.name == "test1":

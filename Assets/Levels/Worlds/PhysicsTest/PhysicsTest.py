@@ -8,6 +8,7 @@ from Nodes.Physics.PolygonPhsxBody import PolygonPhsxBody
 from RenderUtil import RenderUtil
 from Maths import Vector2
 from Nodes.Physics.PhysicsManager import PhysicsManager
+from Nodes.Physics.PolygonDragger import PolygonDragger
 from GTK import GTK
 
 class PhysicsTest(ScriptBase):
@@ -28,7 +29,7 @@ class PhysicsTest(ScriptBase):
         self.polygon1.apply_gravity = False
         self.world.nodes.append(self.polygon1)
 
-        #self.polyDragger1 = PolyDragger(world)
+        #self.polyDragger1 = PolygonDragger(world)
         #self.polyDragger1.parent_node = self.polygon1
         #self.world.nodes.append(self.polyDragger1)
 
@@ -40,6 +41,7 @@ class PhysicsTest(ScriptBase):
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_BACKSPACE:
                     self.game.load_level("Assets/Levels/Frontend/Frontend.json")
+
 
 
     
