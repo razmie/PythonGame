@@ -1,34 +1,32 @@
-""" Gilbert-Johnson-Keerthi Algorithm implementation 
-    to detect intersection between two convex polygons """
+from Maths import Vector2
 
+# Gilbert-Johnson-Keerthi Algorithm implementation 
+# to detect intersection between two convex polygons
 class GTK:
     # Returns True if polygon1 and polygon2 intersect
     @staticmethod
     def intersect(polygon1: list, polygon2: list) -> bool: 
-    
-        ORIGIN = [0, 0]
+        ORIGIN = Vector2(0, 0)
 
-        def subtract(vector1: list, vector2: list) -> list:
-            x1, y1 = vector1[0], vector1[1]
-            x2, y2 = vector2[0], vector2[1]
-            return [x1-x2, y1-y2]
+        # def subtract(vector1: list, vector2: list) -> list:
+        #     x1, y1 = vector1.x, vector1.y
+        #     x2, y2 = vector2.x, vector2.y
+        #     return Vector2(x1-x2, y1-y2)
 
         def dot(vector1: list, vector2: list) -> list:
-            x1, y1 = vector1[0], vector1[1]
-            x2, y2 = vector2[0], vector2[1]
+            x1, y1 = vector1.x, vector1.y
+            x2, y2 = vector2.x, vector2.y
             return x1*x2 + y1*y2
 
         def centroid(polygon: list) -> list:
-            x = [vertex[0] for vertex in polygon]
-            y = [vertex[1] for vertex in polygon]
-            return [sum(x)/len(polygon), sum(y)/len(polygon)] 
+            x = [vertex.x for vertex in polygon]
+            y = [vertex.y for vertex in polygon]
+            return Vector2(sum(x)/len(polygon), sum(y)/len(polygon))
 
         def normalize(vector: list) -> list: 
-            x, y = vector[0], vector[1] 
+            x, y = vector.x, vector.y
             magnitude = (x*x + y*y)**0.5
-            return [x/magnitude, y/magnitude]
-
-
+            return Vector2(x/magnitude, y/magnitude)
 
         # Finds the support point in the Minkowski Difference, 
         # by taking the difference between the furthest point 
@@ -48,10 +46,8 @@ class GTK:
                 return furthest_point
 
             fp_shape1 = get_furthest_point(polygon1, direction)
-            fp_shape2 = get_furthest_point(polygon2, subtract(ORIGIN, direction))
-            return subtract(fp_shape1, fp_shape2) 
-
-
+            fp_shape2 = get_furthest_point(polygon2, ORIGIN - direction)
+            return fp_shape1 - fp_shape2
 
         # Depending on the size of the simplex, 
         # finds a new direction and updates the 
@@ -64,9 +60,9 @@ class GTK:
             # X represents cross product.
             def triple_cross(vector1: list, vector2: list) -> list:
                 
-                x1, y1 = vector1[0], vector1[1]
-                x2, y2 = vector2[0], vector2[1]
-                return [y1*(y1*x2 - x1*y2), x1*(x1*y2 - y1*x2)]
+                x1, y1 = vector1.x, vector1.y
+                x2, y2 = vector2.x, vector2.y
+                return Vector2(y1*(y1*x2 - x1*y2), x1*(x1*y2 - y1*x2))
 
             # Point A is the most recently added 
             # point to the simplex by convention. 
@@ -76,42 +72,39 @@ class GTK:
             def handle_line(simplex: list, direction: list) -> False:
                 
                 B, A = simplex[0], simplex[1]
-                AB, AO = subtract(B, A), subtract(ORIGIN, A)
+                AB, AO = B - A, ORIGIN - A
                 AB_perpendicular = triple_cross(AB, AO)
-                direction[0], direction[1] = AB_perpendicular[0], AB_perpendicular[1]
+                direction.x, direction.y = AB_perpendicular.x, AB_perpendicular.y
                 return False
 
-            # If dot(AB_perpendicular, AC) < 0, ORIGIN is in Voronoi 
-            # region AB, remove point C from the simplex. Similarly, 
-            # point B is redundant if dot(AC_perpendicular, AB) < 0. 
-            # If none of those conditions is satisfied, ORIGIN is in 
-            # triangle ABC, return True.
+            # If dot(AB_perpendicular, AC) < 0, ORIGIN is in Voronoi region AB,
+            # remove point C from the simplex. Similarly, point B is redundant
+            # if dot(AC_perpendicular, AB) < 0. If none of those conditions
+            # is satisfied, ORIGIN is in triangle ABC, return True.
             def handle_tri(simplex: list, direction: list) -> bool:
                 C, B, A = simplex[0], simplex[1], simplex[2]
-                AB, AC, AO = subtract(B, A), subtract(C, A), subtract(ORIGIN, A)
+                AB, AC, AO = B - A, C - A, ORIGIN - A
                 AB_perpendicular = triple_cross(AB, AO)
                 AC_perpendicular = triple_cross(AC, AO)
                 if dot(AB_perpendicular, AC) < 0 and dot(AC_perpendicular, AB) >= 0:
                     simplex.remove(C) 
-                    direction[0], direction[1] = AB_perpendicular[0], AB_perpendicular[1]
+                    direction.x, direction.y = AB_perpendicular.x, AB_perpendicular.y
                     return False
                 elif dot(AB_perpendicular, AC) >= 0 and dot(AC_perpendicular, AB) < 0:
                     simplex.remove(B) 
-                    direction[0], direction[1] = AC_perpendicular[0], AC_perpendicular[1]
+                    direction.x, direction.y = AC_perpendicular.x, AC_perpendicular.y
                     return False
                 return True
             
             return handle_line(simplex, direction) if len(simplex) == 2 else handle_tri(simplex, direction)
 
-
-
         # Initial direction could have been chosen 
         # randomly. Find the first support point and 
         # add it to the simplex. The next direction 
         # must be towards the ORIGIN.
-        direction = normalize(subtract(centroid(polygon2), centroid(polygon1))) 
+        direction = normalize(centroid(polygon2) - centroid(polygon1)) 
         simplex = [get_support_point(polygon1, polygon2, direction)] 
-        direction = subtract(ORIGIN, simplex[0]) 
+        direction = ORIGIN - simplex[0] 
         
         # Get new support points. If point A doesn't
         # pass the ORIGIN, polygons do not intersect, 

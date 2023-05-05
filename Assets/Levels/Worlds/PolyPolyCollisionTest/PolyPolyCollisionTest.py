@@ -113,7 +113,7 @@ class PolyPolyCollisionTest(ScriptBase):
                 polygon1, dragger1 = poly_info1
                 polygon2, dragger2 = poly_info2
 
-                ##coll = GTK.intersect(polygon1.world_vertices, polygon2.world_vertices)
+                #coll = GTK.intersect(polygon1.world_vertices, polygon2.world_vertices)
                 #print(coll)
 
                 if CollisionUtil.are_bounding_boxes_inside(polygon1.bounds, polygon2.bounds):
