@@ -23,7 +23,6 @@ class FrontendScript(ScriptBase):
             self.game.load_level("Assets/Levels/Worlds/VerletTest/VerletTest.json")
         elif button.name == "test4":
             self.game.load_level("Assets/Levels/Worlds/PhysicsTest/PhysicsTest.json")
-            
 
     def create_button(self, button_name: str, text: str):
         screen_size = self.world.game.screen.get_size()

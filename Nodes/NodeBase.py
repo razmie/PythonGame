@@ -20,6 +20,8 @@ class NodeBase:
 
         self.parent_node = None
 
+        self.can_draw = True
+
     def handle_events(self):
         pass
 
