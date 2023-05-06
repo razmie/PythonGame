@@ -18,7 +18,7 @@
             "type": "python",
             "request": "launch",
             "program": "Main.py",
-            "args": ["level=Assets/Levels/Worlds/PhysicsTest/PhysicsTest.json"],
+            "args": ["level=Assets/Levels/Worlds/PolyPolyCollisionTest/PolyPolyCollisionTest.json"],
             "console": "integratedTerminal",
             "justMyCode": true
         }       

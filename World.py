@@ -1,7 +1,7 @@
 import pygame, pygame.gfxdraw
 import os, importlib, inspect, json
 import Game, Level
-from Maths import Maths
+from Maths import Maths, Rect
 from Camera import Camera
 from WorldAssets import WorldAssets
 from ScriptBase import ScriptBase
@@ -121,12 +121,12 @@ class World:
 
         pygame.draw.line(self.game.screen, color, screen_start, screen_end, screen_width)
 
-    def draw_rect(self, rect, color: pygame.color, rect_width: int = 0):
-        pos = self.camera.world_to_screen(rect[0])
-        width = self.camera.world_to_screen_size(rect[1][0])
-        height = self.camera.world_to_screen_size(rect[1][1])
+    def draw_rect(self, rect: Rect, color: pygame.color, line_width: int = 0):
+        pos = self.camera.world_to_screen(rect.position)
+        width = self.camera.world_to_screen_size(rect.size.x)
+        height = self.camera.world_to_screen_size(rect.size.y)
 
-        pygame.draw.rect(self.game.screen, color, ((pos.x, pos.y), (width,height)), rect_width)
+        pygame.draw.rect(self.game.screen, color, ((pos.x, pos.y), (width, height)), line_width)
 
     def draw_polygon(self, vertices, color: pygame.color):
         if len(vertices) <= 2:

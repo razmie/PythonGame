@@ -51,7 +51,46 @@ class Vector2:
     def normalize(self):
         len = self.length()
         return Vector2(self.x / len, self.y / len)
+
+class Rect:
+    def __init__(self, x: float, y: float, width: float, height: float):
+        self.position = Vector2(x, y)
+        self.size = Vector2(width, height)
+
+    def set(self, position: Vector2 = Vector2(), size: Vector2 = Vector2()):
+        self.position = position
+        self.size = size
+
+    def set(self, position: Vector2, size: Vector2):
+        self.position = position
+        self.size = size
+
+    def set(self, position: list, size: list):
+        self.position.set(position)
+        self.size.set(size)
+
+    def set(self, position: tuple, size: tuple):
+        self.position.set(position)
+        self.size.set(size)
+
+    def get_left(self):
+        return self.position.x
     
+    def get_top(self):
+        return self.position.y
+    
+    def get_right(self):
+        return self.position.x + self.size.x
+    
+    def get_bottom(self):
+        return self.position.y + self.size.y
+    
+    def get_left_top(self):
+        return self.position
+    
+    def get_right_bottom(self):
+        return self.position + self.size
+
 class Matrix3x3:
     def __init__(self, rows = [[1,0,0], [0,1,0], [0,0,1]]):
         if len(rows) != 3 or any(len(row) != 3 for row in rows):

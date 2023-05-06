@@ -1,5 +1,5 @@
 import pygame
-from Maths import Vector2
+from Maths import Vector2, Rect
 
 class RenderUtil:
     RED = (255,0,0)
@@ -24,8 +24,9 @@ class RenderUtil:
                 max_x = vertex.x
             if vertex.y > max_y:
                 max_y = vertex.y
-                
-        return Vector2(min_x, min_y), Vector2(max_x, max_y)
+
+        #return Vector2(min_x, min_y), Vector2(max_x, max_y)
+        return Rect(min_x, min_y, max_x-min_x, max_y-min_y) 
 
     def lerp(self, p1, p2, f):
         return p1 + f * (p2 - p1)

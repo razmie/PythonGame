@@ -2,7 +2,7 @@ from ScriptBase import ScriptBase
 import pygame
 import World
 from Input import Input
-from Maths import Vector2
+from Maths import Vector2, Rect
 from Nodes.NodeBase import NodeBase
 from Nodes.PolygonNode import PolygonNode
 from Nodes.PolygonDragger import PolygonDragger
@@ -51,6 +51,8 @@ class PolyPolyCollisionTest(ScriptBase):
                 [self.polygon1, self.polyDragger1],
                 [self.polygon2, self.polyDragger2]
             ]
+        
+        self.gen = self.create_generator()
 
     def handle_events(self):
         for event in self.game.cached_events:
@@ -107,5 +109,10 @@ class PolyPolyCollisionTest(ScriptBase):
             polygon, dragger = poly_info
 
             if dragger.bounds_colliding:
-                rect = (polygon.bounds[0], (polygon.bounds[1].x-polygon.bounds[0].x, (polygon.bounds[1].y-polygon.bounds[0].y)))
-                self.world.draw_rect(rect, (0,0,0), 2)
+                self.world.draw_rect(polygon.bounds, (0,0,0), 2)
+
+    def create_generator(self):
+        mylist = range(10)
+        for i in mylist:
+            yield i
+        print("done")

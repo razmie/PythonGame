@@ -48,8 +48,8 @@ class ButtonWidget(PanelWidget):
         bounds = RenderUtil.get_polygon_bounds(self.rotated_vertices)
         
         self.rendered_rect = self.rendered_text.get_rect()
-        min = bounds[0]
-        max = bounds[1]
+        min = bounds.get_left_top()
+        max = bounds.get_right_bottom()
 
         if self.justification == ButtonWidget.TextJustification.LEFT:
             text_pos = (self.padding + min.x, min.y + (max.y - min.y) * 0.5)

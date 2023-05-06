@@ -1,5 +1,5 @@
 from math import sqrt
-from Maths import Vector2
+from Maths import Vector2, Rect
 
 class CollisionUtil:
     # Checks if a point is inside a polygon.
@@ -30,10 +30,19 @@ class CollisionUtil:
     
     @staticmethod
     # Checks if boxes are intersecting using axis-aligned bounding boxes
-    def are_bounding_boxes_inside(box1: tuple, box2: tuple):
-        if box1[1].x < box2[0].x or box1[0].x > box2[1].x:
+    def are_bounding_boxes_inside(box1: Rect, box2: Rect):
+        # if box1[1].x < box2[0].x or box1[0].x > box2[1].x:
+        #     return False
+        # if box1[1].y < box2[0].y or box1[0].y > box2[1].y:
+        #     return False
+        b1_right = box1.get_right()
+        b1_bottom = box1.get_bottom()
+        b2_right = box2.get_right()
+        b2_bottom = box2.get_bottom()
+
+        if b1_right < box2.position.x or box1.position.x > b2_right:
             return False
-        if box1[1].y < box2[0].y or box1[0].y > box2[1].y:
+        if b1_bottom < box2.position.y or box1.position.y > b2_bottom:
             return False
         return True
     
