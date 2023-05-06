@@ -5,7 +5,7 @@ from Input import Input
 from Maths import Vector2
 from Nodes.NodeBase import NodeBase
 from Nodes.PolygonNode import PolygonNode
-from Nodes.Physics.PolygonDragger import PolygonDragger
+from Nodes.PolygonDragger import PolygonDragger
 from CollisionUtil import CollisionUtil
 from RenderUtil import RenderUtil
 from Maths import Vector2

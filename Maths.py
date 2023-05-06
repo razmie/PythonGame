@@ -48,7 +48,7 @@ class Vector2:
     def length(self):
         return math.sqrt(self.x*self.x + self.y*self.y)
     
-    def normalized(self):
+    def normalize(self):
         len = self.length()
         return Vector2(self.x / len, self.y / len)
     
