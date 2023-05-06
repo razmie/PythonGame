@@ -21,6 +21,8 @@ class Game:
     def __init__(self):
         pygame.init()
 
+        self.screen_color = (255, 255, 255)
+
         self.clock = pygame.time.Clock()
         self.screen = pygame.display.set_mode([800, 600])
         self.update_count = 0
@@ -54,7 +56,7 @@ class Game:
                     if event.key == pygame.K_ESCAPE:
                         self.level_running = False
 
-            self.screen.fill((255, 255, 255))
+            self.screen.fill(self.screen_color)
 
             self.level.update(deltaTime)
 

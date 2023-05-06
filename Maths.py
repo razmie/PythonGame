@@ -51,6 +51,9 @@ class Vector2:
     def normalize(self):
         len = self.length()
         return Vector2(self.x / len, self.y / len)
+    
+    def perpendicular(self):
+        return Vector2(-self.y, self.x)
 
 class Rect:
     def __init__(self, x: float, y: float, width: float, height: float):

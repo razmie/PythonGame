@@ -5,8 +5,19 @@ class RenderUtil:
     RED = (255,0,0)
     GREEN = (0,255,0)
     BLUE = (0,0,255)
+    CYAN = (0,255,255)
+    YELLOW = (255,255,0)
+    MAGENTA = (255,0,255)
     WHITE = (255,255,255)
+    GRAY = (128,128,128)
     BLACK = (0,0,0)
+
+    LIGHT_RED = (255,128,128)
+    LIGHT_GREEN = (128,255,128)
+    LIGHT_BLUE = (128,128,255)
+    DARK_RED = (128,0,0)
+    DARK_GREEN = (0,128,0)
+    DARK_BLUE = (0,0,128)
 
     @staticmethod
     def get_polygon_bounds(vertices):

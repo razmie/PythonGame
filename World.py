@@ -119,7 +119,7 @@ class World:
         screen_width = int(self.camera.world_to_screen_size(width))
         screen_width = max(screen_width, 1)
 
-        pygame.draw.line(self.game.screen, color, screen_start, screen_end, screen_width)
+        pygame.draw.line(self.game.screen, color, (screen_start.x, screen_start.y), (screen_end.x, screen_end.y), screen_width)
 
     def draw_rect(self, rect: Rect, color: pygame.color, line_width: int = 0):
         pos = self.camera.world_to_screen(rect.position)
