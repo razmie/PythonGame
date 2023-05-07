@@ -47,52 +47,6 @@ class CollisionUtil:
         return True
     
     @staticmethod
-    def project_polygon_onto_axis(vertices, axis: Vector2):
-        # Project the polygon onto the axis.
-        min = float('inf')
-        max = float('-inf')
-        for vertex in vertices:
-            # Project the vertex onto the axis.
-            projection = vertex.x * axis.x + vertex.y * axis.y
-            # Update the min and max values.
-            if projection < min:
-                min = projection
-            if projection > max:
-                max = projection
-        # Return the min and max values.
-        return (min, max)
-
-    @staticmethod
-    # Checks if polygon 1 is intersecting with polygon2 using the Separating Axis Theorem.
-    def is_polygon_intersecting_with_polygon(vertices1, vertices2):
-        # Check if there's a separating axis between the polygons.
-        for i in range(len(vertices1)):
-            # Get the current vertex and the next vertex.
-            p1 = vertices1[i]
-            p2 = vertices1[(i + 1) % len(vertices1)]
-            # Subtract the two to get the edge vector.
-            edge = Vector2(p1.x - p2.x, p1.y - p2.y)
-            # Get the perpendicular vector.
-            axis = Vector2(-edge.y, edge.x)
-            # Project both polygons onto the axis.
-            min1, max1 = CollisionUtil.project_polygon_onto_axis(vertices1, axis)
-            min2, max2 = CollisionUtil.project_polygon_onto_axis(vertices2, axis)
-            # Check if the projections are overlapping.
-            if max1 < min2 or max2 < min1:
-                # There's a separating axis, so the polygons aren't intersecting.
-                return False
-        # There isn't a separating axis, so the polygons are intersecting.
-        return True
-
-    @staticmethod
-    # Checks if two polygons are overlapping using the Separating Axis Theorem.
-    def are_polygons_intersecting(vertices1, vertices2):
-        if CollisionUtil.is_polygon_intersecting_with_polygon(vertices2, vertices2) and \
-            CollisionUtil.is_polygon_intersecting_with_polygon(vertices2, vertices1):
-            return True
-        return False
-    
-    @staticmethod
     def distance(a, b):
         return sqrt((a.x - b.x)^2 + (a.y - b.y)^2)
 

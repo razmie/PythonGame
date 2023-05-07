@@ -26,6 +26,7 @@ class Game:
         self.clock = pygame.time.Clock()
         self.screen = pygame.display.set_mode([800, 600])
         self.update_count = 0
+        self.delta_time = 0
 
         level_name = Game.find_in_argument_variable("level")
 
@@ -42,7 +43,7 @@ class Game:
         while self.level_running and self.level:
             # Calculate delta time.
             self.currentTime = time.time()
-            deltaTime = self.currentTime - self.lastFrameTime
+            self.delta_time = self.currentTime - self.lastFrameTime
             self.lastFrameTime = self.currentTime
 
             self.clock.tick(self.FPS)
@@ -58,7 +59,7 @@ class Game:
 
             self.screen.fill(self.screen_color)
 
-            self.level.update(deltaTime)
+            self.level.update(self.delta_time)
 
             self.update_count += 1
 

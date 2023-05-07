@@ -158,3 +158,23 @@ class Maths:
         for vertex in vertices:
             vertex_values.append((vertex.x, vertex.y))
         return vertex_values
+    
+    @staticmethod
+    def pi():
+        return math.pi
+    
+    @staticmethod
+    def pi2():
+        return math.pi * 2
+    
+    @staticmethod
+    def pi4():
+        return math.pi * 4
+    
+    @staticmethod
+    def pi_2():
+        return math.pi / 2
+    
+    @staticmethod
+    def pi_4():
+        return math.pi / 4

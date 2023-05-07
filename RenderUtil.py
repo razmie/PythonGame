@@ -9,6 +9,7 @@ class RenderUtil:
     YELLOW = (255,255,0)
     MAGENTA = (255,0,255)
     WHITE = (255,255,255)
+    ORANGE = (255,128,0)
     GRAY = (128,128,128)
     BLACK = (0,0,0)
 
