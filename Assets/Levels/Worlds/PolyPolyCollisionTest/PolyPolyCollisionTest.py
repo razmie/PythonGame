@@ -12,6 +12,13 @@ from RenderUtil import RenderUtil
 from GTK import GTK
 
 class PolyPolyCollisionTest(ScriptBase):
+    DEBUG_DRAW_NONE = 0
+    # Prokect polygons onto axes.
+    DEBUG_DRAW_PROJECTION = 1
+     # Minimum Translation Vector
+    DEBUG_DRAW_MTV = 2
+    DEBUG_DRAW_MAX = 3
+
     class StepInfo:
         def __init__(self):
             self.test_edge1_pos1 = Vector2()
@@ -31,11 +38,11 @@ class PolyPolyCollisionTest(ScriptBase):
         self.polygon1 = PolygonNode(world)
         vertices = [
             Vector2(0,0),
-            Vector2(100,0),
-            Vector2(100,100),
-            Vector2(0,100)
+            Vector2(150,0),
+            Vector2(150,200),
+            Vector2(0,200)
         ]
-        self.polygon1.set(Vector2(-200,-200), vertices, Vector2(0.5,0.5), RenderUtil.GREEN)
+        self.polygon1.set(Vector2(-150,-100), vertices, Vector2(0.5,0.5), RenderUtil.GREEN)
         self.world.nodes.append(self.polygon1)
 
         self.polyDragger1 = PolygonDragger(world)
@@ -43,20 +50,25 @@ class PolyPolyCollisionTest(ScriptBase):
         self.world.nodes.append(self.polyDragger1)
 
         self.polygon2 = PolygonNode(world)
+        vertices = [
+            Vector2(0,0),
+            Vector2(100,-50),
+            Vector2(150,100),
+            Vector2(50,150),
+            Vector2(-50,100)
+        ]
+        # vertices = [
+        #     Vector2(-50,50),
+        #     Vector2(0,-50),
+        #     Vector2(50,50),
+        # ]
         # vertices = [
         #     Vector2(0,0),
-        #     Vector2(100,-50),
-        #     Vector2(150,100),
-        #     Vector2(50,150),
-        #     Vector2(-50,100)
+        #     Vector2(50,0),
+        #     Vector2(50,100),
+        #     Vector2(0,100)
         # ]
-        vertices = [
-            Vector2(-50,50),
-            Vector2(0,-50),
-            Vector2(50,50),
-        ]
-        self.polygon2.rotation = 0.5
-        self.polygon2.set(Vector2(250,-100), vertices, Vector2(0,0), RenderUtil.GREEN)
+        self.polygon2.set(Vector2(150,-100), vertices, Vector2(0,0), RenderUtil.GREEN)
         self.world.nodes.append(self.polygon2)
 
         self.polyDragger2 = PolygonDragger(world)
@@ -68,12 +80,13 @@ class PolyPolyCollisionTest(ScriptBase):
                 [self.polygon2, self.polyDragger2]
             ]
         
+        self.debug_mode = self.DEBUG_DRAW_NONE
+        
         # Use for stepping through the collision process
-        self.show_step = True
         self.step_info = self.StepInfo()
-        self.stepper = self.get_polygon_by_step()
-        self.step_time = 0
+        self.stepper = self.get_polygon_test_by_step()
         self.step_time_max = 1
+        self.step_time = self.step_time_max
         self.can_step = True
 
     def handle_events(self):
@@ -89,7 +102,7 @@ class PolyPolyCollisionTest(ScriptBase):
                     else:
                         self.world.game.screen_color = (16,16,16)
                 elif event.key == pygame.K_d:
-                    self.show_step = not self.show_step
+                    self.debug_mode = (self.debug_mode + 1) % self.DEBUG_DRAW_MAX
                 elif event.key == pygame.K_q or event.key == pygame.K_w:
                     for poly_info in self.poly_info_list:
                         polygon, dragger = poly_info
@@ -125,8 +138,7 @@ class PolyPolyCollisionTest(ScriptBase):
                 else:
                     polygon.color = RenderUtil.GREEN
 
-        if self.show_step:
-            self.process_collision_step(delta_time)
+        self.process_collision_step(delta_time)
 
     def draw(self, surface: pygame.Surface):
         for poly_info in self.poly_info_list:
@@ -157,10 +169,18 @@ class PolyPolyCollisionTest(ScriptBase):
                         dragger1.colliding = True
                         dragger2.colliding = True
 
-                        #self.world.draw_line(vertex, vertex + axis, 8, RenderUtil.YELLOW)
-                        self.world.draw_point(SATResult1.min_vertex, 12, RenderUtil.YELLOW)
-                        self.world.draw_point(SATResult1.max_vertex, 12, RenderUtil.ORANGE)
-                        #self.world.draw_point(vertex + axis, 12, RenderUtil.YELLOW)
+                        if self.debug_mode == self.DEBUG_DRAW_MTV:
+                            # Draw the minimum translation vector.
+                            self.world.draw_line(SATResult1.overlaping_result.min_vert1, SATResult1.overlaping_result.min_vert2, 8, RenderUtil.YELLOW)
+                            self.world.draw_point(SATResult1.overlaping_result.min_vert1, 8, RenderUtil.YELLOW)
+                            self.world.draw_point(SATResult1.overlaping_result.min_vert2, 8, RenderUtil.YELLOW)
+
+                            # Draw the contact point and contact axis
+                            contact, contact_axis = SATResult1.overlaping_result.calculate_contact()
+
+                            self.world.draw_line(contact, contact + contact_axis, 10, RenderUtil.RED)
+                            self.world.draw_point(contact, 10, RenderUtil.RED)
+                            self.world.draw_point(contact + contact_axis, 10, RenderUtil.RED)
 
                     else:
                         dragger1.colliding = False
@@ -171,7 +191,7 @@ class PolyPolyCollisionTest(ScriptBase):
                     dragger2.bounds_colliding = False
                     dragger2.colliding = False
 
-    def get_polygon_by_step(self):
+    def get_polygon_test_by_step(self):
         poly_count = len(self.poly_info_list)
         step_info = self.StepInfo()
 
@@ -180,15 +200,18 @@ class PolyPolyCollisionTest(ScriptBase):
                 polygon1, dragger = self.poly_info_list[i]
                 step_info.polygon1 = polygon1
 
-                for k in range(len(polygon1.world_vertices)):
+                for j in range(len(polygon1.world_vertices)):
                     step_info.test_polygon = polygon1
-                    step_info.test_edge1_pos1_idx = k
+                    step_info.test_edge1_pos1_idx = j
                     step_info.test_edge1_pos1 = polygon1.world_vertices[step_info.test_edge1_pos1_idx]
-                    step_info.test_edge1_pos2_idx = (k+1)%len(polygon1.world_vertices)
+                    step_info.test_edge1_pos2_idx = (j+1)%len(polygon1.world_vertices)
                     step_info.test_edge1_pos2 = polygon1.world_vertices[step_info.test_edge1_pos2_idx]
                     yield step_info
 
     def process_collision_step(self, deltaTime: float):
+        if self.debug_mode != self.DEBUG_DRAW_PROJECTION:
+            return
+        
         if self.can_step:
             self.step_time += deltaTime
             if self.step_time > self.step_time_max:
@@ -204,10 +227,22 @@ class PolyPolyCollisionTest(ScriptBase):
             # Draw perpendicular line.
             perp = line.perpendicular()
             perp_norm = perp.normalize()
-            screen_size = self.world.game.screen.get_size()
             perp_line_start = perp * -1000
             perp_line_end = perp * 1000
             self.world.draw_line(perp_line_start, perp_line_end, 1, RenderUtil.WHITE)
+
+            # Draw projected polygons on the perpendicular line.
+            # poly_count = len(self.poly_info_list)
+            # for i in range(poly_count):
+            #     other_polygon, dragger = self.poly_info_list[i]
+            #     if other_polygon == test_polygon:
+            #         continue
+                # result = SAT.is_polygon_overlapping_with_polygon(test_polygon.world_vertices, other_polygon.world_vertices)
+                # if result.overlapping:
+                #     self.world.draw_line(result.min_vert1, result.min_vert2, 6, RenderUtil.GRAY)
+                #     self.world.draw_point(result.min_vert1, 12, RenderUtil.GRAY)
+                #     self.world.draw_point(result.min_vert2, 12, RenderUtil.GRAY)
+                #     self.world.draw_point(result.nearest_vert, 8, RenderUtil.GRAY)
 
             # Draw projected polygons on the perpendicular line.
             poly_count = len(self.poly_info_list)

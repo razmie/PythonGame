@@ -54,6 +54,26 @@ class Vector2:
     
     def perpendicular(self):
         return Vector2(-self.y, self.x)
+    
+    def project(self, start, end, within_line = False):
+        # Get the vector from the start to the end.
+        line = end - start
+        line_norm = line.normalize()
+        # Get the vector from the start to the point.
+        point = self - start
+        # Project the point onto the line.
+        dot = point.dot(line.normalize())
+
+        if within_line:
+            line_length = line.length()
+            if dot > line_length:
+                dot = line_length
+            elif dot < 0:
+                dot = 0
+
+        projection = line_norm * dot
+
+        return start + projection
 
 class Rect:
     def __init__(self, x: float, y: float, width: float, height: float):
