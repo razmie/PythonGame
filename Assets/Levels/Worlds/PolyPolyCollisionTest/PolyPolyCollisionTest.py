@@ -179,7 +179,7 @@ class PolyPolyCollisionTest(ScriptBase):
 
                             # Draw the contact
                             contact_result: SAT.ContactResult = MTV_result.overlaping_result.contact_result
-                            self.world.draw_line(contact_result.vertex, contact_result.vertex + contact_result.move_away_axis, 4, RenderUtil.RED)
+                            self.world.draw_line(contact_result.vertex, contact_result.vertex + contact_result.move_away_axis * 2, 4, RenderUtil.RED)
                             self.world.draw_point(contact_result.vertex, 6, RenderUtil.RED)
                             self.world.draw_point(contact_result.vertex + contact_result.move_away_axis, 6, RenderUtil.RED)
 
@@ -243,7 +243,7 @@ class PolyPolyCollisionTest(ScriptBase):
                         self.world.draw_line(result.min_v1, result.min_v2, 6, RenderUtil.GRAY)
                         self.world.draw_point(result.min_v1, 12, RenderUtil.GRAY)
                         self.world.draw_point(result.min_v2, 12, RenderUtil.GRAY)
-                        self.world.draw_point(result.nearest_vert, 8, RenderUtil.GRAY)
+                        self.world.draw_point(result.nearest_vert, 12, RenderUtil.CYAN)
 
                         # Draw the contact point and contact axis
                         result.calculate_contact()

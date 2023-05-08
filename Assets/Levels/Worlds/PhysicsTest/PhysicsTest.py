@@ -25,13 +25,24 @@ class PhysicsTest(ScriptBase):
             Vector2(100,100),
             Vector2(0,100)
         ]
-        self.polygon1.set(Vector2(-200,-200), vertices, Vector2(0.5,0.5), RenderUtil.GREEN)
+        self.polygon1.set(Vector2(-200,0), vertices, Vector2(0.5,0.5), RenderUtil.GREEN)
         self.polygon1.apply_gravity = False
         self.world.nodes.append(self.polygon1)
 
-        self.polyDragger1 = PolygonPhsxDragger(world)
-        self.polyDragger1.parent_node = self.polygon1
-        self.world.nodes.append(self.polyDragger1)
+        self.polygon2 = PolygonPhsxBody(world)
+        vertices = [
+            Vector2(0,0),
+            Vector2(100,0),
+            Vector2(100,100),
+            Vector2(0,100)
+        ]
+        self.polygon2.set(Vector2(200,0), vertices, Vector2(0.5,0.5), RenderUtil.GREEN)
+        self.polygon2.apply_gravity = False
+        self.world.nodes.append(self.polygon2)
+
+        # self.polyDragger1 = PolygonPhsxDragger(world)
+        # self.polyDragger1.parent_node = self.polygon1
+        # self.world.nodes.append(self.polyDragger1)
 
         physics_manger = PhysicsManager(world)
         self.world.nodes.append(physics_manger)
@@ -40,7 +51,35 @@ class PhysicsTest(ScriptBase):
         for event in self.game.cached_events:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_BACKSPACE:
-                    self.game.load_level("Assets/Levels/Frontend/Frontend.json")
+                    self.game.load_frontend()
+
+    def update(self, deltaTime: float):
+        super().update(deltaTime)
+
+        key_down = False
+        move_direction = Vector2(0,0)
+    
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_a]:
+            move_direction += Vector2(-1,0)
+            key_down = True
+        if keys[pygame.K_d]:
+            move_direction += Vector2(1,0)
+            key_down = True
+        if keys[pygame.K_w]:
+            move_direction += Vector2(0,-1)
+            key_down = True
+        if keys[pygame.K_s]:
+            move_direction += Vector2(0,1)
+            key_down = True
+
+        if key_down:
+            if move_direction.length() > 0:
+                move_direction = move_direction.normalize()
+                move = move_direction * deltaTime * 1000
+
+                self.polygon1.apply_impulse(move, True)
+
 
 
 
