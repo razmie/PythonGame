@@ -173,15 +173,15 @@ class PolyPolyCollisionTest(ScriptBase):
 
                         if self.debug_mode == self.DEBUG_DRAW_MTV:
                             # Draw the minimum translation vector.
-                            self.world.draw_line(MTV_result.overlaping_result.min_vert1, MTV_result.overlaping_result.min_vert2, 8, RenderUtil.YELLOW)
-                            self.world.draw_point(MTV_result.overlaping_result.min_vert1, 8, RenderUtil.YELLOW)
-                            self.world.draw_point(MTV_result.overlaping_result.min_vert2, 8, RenderUtil.YELLOW)
+                            self.world.draw_line(MTV_result.overlaping_result.min_v1, MTV_result.overlaping_result.min_v2, 4, RenderUtil.YELLOW)
+                            self.world.draw_point(MTV_result.overlaping_result.min_v1, 6, RenderUtil.YELLOW)
+                            self.world.draw_point(MTV_result.overlaping_result.min_v2, 6, RenderUtil.YELLOW)
 
-                            # Draw the contact point and contact axis
+                            # Draw the contact
                             contact_result: SAT.ContactResult = MTV_result.overlaping_result.contact_result
-                            self.world.draw_line(contact_result.contact, contact_result.contact + contact_result.axis, 10, RenderUtil.RED)
-                            self.world.draw_point(contact_result.contact, 10, RenderUtil.RED)
-                            self.world.draw_point(contact_result.contact + contact_result.axis, 10, RenderUtil.RED)
+                            self.world.draw_line(contact_result.vertex, contact_result.vertex + contact_result.move_away_axis, 4, RenderUtil.RED)
+                            self.world.draw_point(contact_result.vertex, 6, RenderUtil.RED)
+                            self.world.draw_point(contact_result.vertex + contact_result.move_away_axis, 6, RenderUtil.RED)
 
                     else:
                         dragger1.colliding = False
@@ -240,17 +240,17 @@ class PolyPolyCollisionTest(ScriptBase):
                         continue
                     result = SAT.is_polygon_overlapping_with_polygon(test_polygon.world_vertices, other_polygon.world_vertices)
                     if result.overlapping:
-                        self.world.draw_line(result.min_vert1, result.min_vert2, 6, RenderUtil.GRAY)
-                        self.world.draw_point(result.min_vert1, 12, RenderUtil.GRAY)
-                        self.world.draw_point(result.min_vert2, 12, RenderUtil.GRAY)
+                        self.world.draw_line(result.min_v1, result.min_v2, 6, RenderUtil.GRAY)
+                        self.world.draw_point(result.min_v1, 12, RenderUtil.GRAY)
+                        self.world.draw_point(result.min_v2, 12, RenderUtil.GRAY)
                         self.world.draw_point(result.nearest_vert, 8, RenderUtil.GRAY)
 
                         # Draw the contact point and contact axis
                         result.calculate_contact()
                         contact_result: SAT.ContactResult = result.contact_result
-                        self.world.draw_line(contact_result.contact, contact_result.contact + contact_result.axis, 10, RenderUtil.BLUE)
-                        self.world.draw_point(contact_result.contact, 10, RenderUtil.BLUE)
-                        self.world.draw_point(contact_result.contact + contact_result.axis, 10, RenderUtil.BLUE)
+                        self.world.draw_line(contact_result.vertex, contact_result.vertex + contact_result.move_away_axis, 10, RenderUtil.BLUE)
+                        self.world.draw_point(contact_result.vertex, 10, RenderUtil.BLUE)
+                        self.world.draw_point(contact_result.vertex + contact_result.move_away_axis, 10, RenderUtil.BLUE)
 
             if self.debug_mode == self.DEBUG_DRAW_PROJECTION:
                 # Draw projected polygons on the perpendicular line.

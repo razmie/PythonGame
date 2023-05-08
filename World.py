@@ -1,6 +1,7 @@
 import pygame, pygame.gfxdraw
 import os, importlib, inspect, json
 import Game, Level
+from RenderUtil import RenderUtil
 from Maths import Maths, Rect
 from Camera import Camera
 from WorldAssets import WorldAssets
