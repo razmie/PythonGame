@@ -70,6 +70,9 @@ class Game:
         self.has_level_to_load = True
         self.level_running = False
 
+    def load_frontend(self):
+        self.load_level("Assets/Levels/Frontend/Frontend.json")
+
     def check_level_load(self):
         if self.has_level_to_load == True:
             if self.level != None:

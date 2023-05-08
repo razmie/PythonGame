@@ -12,6 +12,8 @@ class VerletTest(ScriptBase):
     def __init__(self, world: World):
         super().__init__(world)
 
+        self.game.screen_color = (255, 255, 255)
+
         background_node = PointNode(self.world)
         background_node.position = Vector2(0, 0)
         background_node.size = 200

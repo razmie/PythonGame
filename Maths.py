@@ -47,6 +47,11 @@ class Vector2:
     
     def length(self):
         return math.sqrt(self.x*self.x + self.y*self.y)
+
+    def truncate(self, max_length):
+        if self.length() > max_length:
+            return self.normalize() * max_length
+        return self
     
     def normalize(self):
         len = self.length()
