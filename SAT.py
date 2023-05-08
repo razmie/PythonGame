@@ -1,6 +1,97 @@
 from Maths import Vector2
 
 class SAT:
+    class ContactResult:
+        def __init__(self):
+            self.contact = Vector2()            
+            self.axis = Vector2()
+            self.axis_length = 0
+
+            # If true, the contact vert was capped within the start and end of the axis.
+            self.capped = False
+
+    class OverlappingResult:
+        def __init__(self):
+            # True if the polygons are overlapping.
+            self.overlapping = False
+            # The smallest overlap found out of all tests.
+            self.min_overlap = float('inf')
+
+            self.min_vert1 = Vector2()
+            self.min_vert2 = Vector2()
+
+            self.nearest_vert = Vector2()
+
+            self.contact_result = SAT.ContactResult()
+
+        def calculate_contact(self):
+            self.contact_result = SAT.ContactResult()
+
+            # Get the vector from the start to the end.
+            line = self.min_vert2 - self.min_vert1
+            line_norm = line.normalize()
+            # Get the vector from the start to the point.
+            point = self.nearest_vert - self.min_vert1
+            # Project the point onto the line.
+            dot = point.dot(line.normalize())
+
+            self.contact_result.contact =  self.min_vert1 + line_norm * dot
+            self.contact_result.axis = self.nearest_vert - self.contact_result.contact
+
+            line_length = line.length()
+            if dot > line_length:
+                dot = line_length
+                self.contact_result.capped = True
+            elif dot < 0:
+                dot = 0
+                self.contact_result.capped = True
+
+            if self.contact_result.capped:
+                # The contact is between the line start and end.
+                self.contact_result.contact =  self.min_vert1 + line_norm * dot
+
+            self.contact_result.axis_length = self.contact_result.axis.length()
+
+    class MTVResult:
+        def __init__(self):
+            self.overlapping = False
+            self.min_overlap = Vector2()
+            
+            #overlaping_result: SAT.OverlappingResult = None
+
+    # Checks if two polygons are overlapping using the Separating Axis Theorem.
+    @staticmethod
+    def are_polygons_intersecting(vertices1, vertices2):
+        result = SAT.MTVResult()
+        overlapping_result1 = SAT.is_polygon_overlapping_with_polygon(vertices1, vertices2)
+        if overlapping_result1.overlapping:
+            overlapping_result2 = SAT.is_polygon_overlapping_with_polygon(vertices2, vertices1)
+            if overlapping_result2.overlapping:
+
+                result.overlapping = True
+
+                # if overlapping_result1.min_overlap < overlapping_result2.min_overlap:
+                #     result.overlaping_result = overlapping_result1
+                # else:
+                #     result.overlaping_result = overlapping_result2
+
+                overlapping_result1.calculate_contact()
+                overlapping_result2.calculate_contact()
+
+                # Always use the contact that wasn't capped within the axis line.
+                if overlapping_result1.contact_result.capped == False and overlapping_result2.contact_result.capped == True:
+                    result.overlaping_result = overlapping_result1
+                elif overlapping_result1.contact_result.capped == True and overlapping_result2.contact_result.capped == False:
+                    result.overlaping_result = overlapping_result2
+                else:
+                    # If both weren't capped, use the one with the smallest axis length.
+                    if overlapping_result1.contact_result.axis_length < overlapping_result2.contact_result.axis_length:
+                        result.overlaping_result = overlapping_result1
+                    else:
+                        result.overlaping_result = overlapping_result2
+
+        return result
+
     @staticmethod
     def project_polygon_onto_axis(vertices, axis: Vector2):
         # Project the polygon onto the axis.
@@ -20,50 +111,9 @@ class SAT:
                 max_vertex = vertex
         # Return the min and max values.
         return min, max, min_vertex, max_vertex
-    
-    class OverlappingResult:
-        def __init__(self):
-            # True if the polygons are overlapping.
-            self.overlapping = False
-            # The smallest overlap found out of all tests.
-            self.min_overlap = float('inf')
 
-            self.min_vert1 = Vector2()
-            self.min_vert2 = Vector2()
-
-            self.nearest_vert = Vector2()
-
-        def calculate_contact(self):
-            proj = self.nearest_vert.project(self.min_vert1, self.min_vert2)
-
-            # Get the vector from the start to the end.
-            line = self.min_vert2 - self.min_vert1
-            line_norm = line.normalize()
-            # Get the vector from the start to the point.
-            point = self.nearest_vert - self.min_vert1
-            # Project the point onto the line.
-            dot = point.dot(line.normalize())
-
-            contact =  self.min_vert1 + line_norm * dot
-            contact_axis = self.nearest_vert - contact
-
-            capped = False
-            line_length = line.length()
-            if dot > line_length:
-                dot = line_length
-                capped = True
-            elif dot < 0:
-                dot = 0
-                capped = True
-
-            if capped:
-                # The contact is between the line start and end.
-                contact =  self.min_vert1 + line_norm * dot
-
-            return contact, contact_axis
-
-    @staticmethod
     # Checks if polygon 1 is intersecting with polygon2 using the Separating Axis Theorem.
+    @staticmethod
     def is_polygon_overlapping_with_polygon(vertices1, vertices2):
         result = SAT.OverlappingResult()
 
@@ -106,28 +156,4 @@ class SAT:
 
         # There isn't a separating axis, so the polygons are intersecting.
         result.overlapping = True
-        return result
-
-    class Result:
-        def __init__(self):
-            self.overlapping = False
-            self.min_overlap = Vector2()
-            
-            overlaping_result: SAT.OverlappingResult = None
-
-    @staticmethod
-    # Checks if two polygons are overlapping using the Separating Axis Theorem.
-    def are_polygons_intersecting(vertices1, vertices2):
-        result = SAT.Result()
-        overlapping_result1 = SAT.is_polygon_overlapping_with_polygon(vertices1, vertices2)
-        if overlapping_result1.overlapping:
-            overlapping_result2 = SAT.is_polygon_overlapping_with_polygon(vertices2, vertices1)
-            if overlapping_result2.overlapping:
-
-                result.overlapping = True
-
-                if overlapping_result1.min_overlap < overlapping_result2.min_overlap:
-                    result.overlaping_result = overlapping_result1
-                else:
-                    result.overlaping_result = overlapping_result2
         return result

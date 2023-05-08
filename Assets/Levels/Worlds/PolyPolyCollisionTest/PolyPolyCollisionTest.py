@@ -15,9 +15,11 @@ class PolyPolyCollisionTest(ScriptBase):
     DEBUG_DRAW_NONE = 0
     # Prokect polygons onto axes.
     DEBUG_DRAW_PROJECTION = 1
-     # Minimum Translation Vector
-    DEBUG_DRAW_MTV = 2
-    DEBUG_DRAW_MAX = 3
+    # Draw the contact results.
+    DEBUG_DRAW_CONTACT = 2
+    # Draw the Minimum Translation Vector results.
+    DEBUG_DRAW_MTV = 3
+    DEBUG_DRAW_MAX = 4
 
     class StepInfo:
         def __init__(self):
@@ -38,8 +40,8 @@ class PolyPolyCollisionTest(ScriptBase):
         self.polygon1 = PolygonNode(world)
         vertices = [
             Vector2(0,0),
-            Vector2(150,0),
-            Vector2(150,200),
+            Vector2(120,0),
+            Vector2(120,200),
             Vector2(0,200)
         ]
         self.polygon1.set(Vector2(-150,-100), vertices, Vector2(0.5,0.5), RenderUtil.GREEN)
@@ -50,24 +52,24 @@ class PolyPolyCollisionTest(ScriptBase):
         self.world.nodes.append(self.polyDragger1)
 
         self.polygon2 = PolygonNode(world)
-        vertices = [
-            Vector2(0,0),
-            Vector2(100,-50),
-            Vector2(150,100),
-            Vector2(50,150),
-            Vector2(-50,100)
-        ]
+        # vertices = [
+        #     Vector2(0,0),
+        #     Vector2(100,-50),
+        #     Vector2(150,100),
+        #     Vector2(50,150),
+        #     Vector2(-50,100)
+        # ]
         # vertices = [
         #     Vector2(-50,50),
         #     Vector2(0,-50),
         #     Vector2(50,50),
         # ]
-        # vertices = [
-        #     Vector2(0,0),
-        #     Vector2(50,0),
-        #     Vector2(50,100),
-        #     Vector2(0,100)
-        # ]
+        vertices = [
+            Vector2(0,0),
+            Vector2(150,0),
+            Vector2(150,200),
+            Vector2(0,200)
+        ]
         self.polygon2.set(Vector2(150,-100), vertices, Vector2(0,0), RenderUtil.GREEN)
         self.world.nodes.append(self.polygon2)
 
@@ -164,23 +166,22 @@ class PolyPolyCollisionTest(ScriptBase):
                     dragger1.bounds_colliding = True
                     dragger2.bounds_colliding = True
 
-                    SATResult1 = SAT.are_polygons_intersecting(polygon1.world_vertices, polygon2.world_vertices)
-                    if SATResult1.overlapping:
+                    MTV_result = SAT.are_polygons_intersecting(polygon1.world_vertices, polygon2.world_vertices)
+                    if MTV_result.overlapping:
                         dragger1.colliding = True
                         dragger2.colliding = True
 
                         if self.debug_mode == self.DEBUG_DRAW_MTV:
                             # Draw the minimum translation vector.
-                            self.world.draw_line(SATResult1.overlaping_result.min_vert1, SATResult1.overlaping_result.min_vert2, 8, RenderUtil.YELLOW)
-                            self.world.draw_point(SATResult1.overlaping_result.min_vert1, 8, RenderUtil.YELLOW)
-                            self.world.draw_point(SATResult1.overlaping_result.min_vert2, 8, RenderUtil.YELLOW)
+                            self.world.draw_line(MTV_result.overlaping_result.min_vert1, MTV_result.overlaping_result.min_vert2, 8, RenderUtil.YELLOW)
+                            self.world.draw_point(MTV_result.overlaping_result.min_vert1, 8, RenderUtil.YELLOW)
+                            self.world.draw_point(MTV_result.overlaping_result.min_vert2, 8, RenderUtil.YELLOW)
 
                             # Draw the contact point and contact axis
-                            contact, contact_axis = SATResult1.overlaping_result.calculate_contact()
-
-                            self.world.draw_line(contact, contact + contact_axis, 10, RenderUtil.RED)
-                            self.world.draw_point(contact, 10, RenderUtil.RED)
-                            self.world.draw_point(contact + contact_axis, 10, RenderUtil.RED)
+                            contact_result: SAT.ContactResult = MTV_result.overlaping_result.contact_result
+                            self.world.draw_line(contact_result.contact, contact_result.contact + contact_result.axis, 10, RenderUtil.RED)
+                            self.world.draw_point(contact_result.contact, 10, RenderUtil.RED)
+                            self.world.draw_point(contact_result.contact + contact_result.axis, 10, RenderUtil.RED)
 
                     else:
                         dragger1.colliding = False
@@ -209,7 +210,7 @@ class PolyPolyCollisionTest(ScriptBase):
                     yield step_info
 
     def process_collision_step(self, deltaTime: float):
-        if self.debug_mode != self.DEBUG_DRAW_PROJECTION:
+        if self.debug_mode != self.DEBUG_DRAW_PROJECTION and self.debug_mode != self.DEBUG_DRAW_CONTACT:
             return
         
         if self.can_step:
@@ -231,66 +232,74 @@ class PolyPolyCollisionTest(ScriptBase):
             perp_line_end = perp * 1000
             self.world.draw_line(perp_line_start, perp_line_end, 1, RenderUtil.WHITE)
 
-            # Draw projected polygons on the perpendicular line.
-            # poly_count = len(self.poly_info_list)
-            # for i in range(poly_count):
-            #     other_polygon, dragger = self.poly_info_list[i]
-            #     if other_polygon == test_polygon:
-            #         continue
-                # result = SAT.is_polygon_overlapping_with_polygon(test_polygon.world_vertices, other_polygon.world_vertices)
-                # if result.overlapping:
-                #     self.world.draw_line(result.min_vert1, result.min_vert2, 6, RenderUtil.GRAY)
-                #     self.world.draw_point(result.min_vert1, 12, RenderUtil.GRAY)
-                #     self.world.draw_point(result.min_vert2, 12, RenderUtil.GRAY)
-                #     self.world.draw_point(result.nearest_vert, 8, RenderUtil.GRAY)
+            if self.debug_mode == self.DEBUG_DRAW_CONTACT:
+                poly_count = len(self.poly_info_list)
+                for i in range(poly_count):
+                    other_polygon, dragger = self.poly_info_list[i]
+                    if other_polygon == test_polygon:
+                        continue
+                    result = SAT.is_polygon_overlapping_with_polygon(test_polygon.world_vertices, other_polygon.world_vertices)
+                    if result.overlapping:
+                        self.world.draw_line(result.min_vert1, result.min_vert2, 6, RenderUtil.GRAY)
+                        self.world.draw_point(result.min_vert1, 12, RenderUtil.GRAY)
+                        self.world.draw_point(result.min_vert2, 12, RenderUtil.GRAY)
+                        self.world.draw_point(result.nearest_vert, 8, RenderUtil.GRAY)
 
-            # Draw projected polygons on the perpendicular line.
-            poly_count = len(self.poly_info_list)
-            for i in range(poly_count):
-                for j in range(i+1, poly_count):
-                    polygon1, dragger = self.poly_info_list[i]
-                    polygon2, dragger = self.poly_info_list[j]
+                        # Draw the contact point and contact axis
+                        result.calculate_contact()
+                        contact_result: SAT.ContactResult = result.contact_result
+                        self.world.draw_line(contact_result.contact, contact_result.contact + contact_result.axis, 10, RenderUtil.BLUE)
+                        self.world.draw_point(contact_result.contact, 10, RenderUtil.BLUE)
+                        self.world.draw_point(contact_result.contact + contact_result.axis, 10, RenderUtil.BLUE)
 
-                    min1, max1, min_vert1, max_vert1 = SAT.project_polygon_onto_axis(polygon1.world_vertices, perp_norm)
-                    min2, max2, min_vert2, max_vert2 = SAT.project_polygon_onto_axis(polygon2.world_vertices, perp_norm)
+            if self.debug_mode == self.DEBUG_DRAW_PROJECTION:
+                # Draw projected polygons on the perpendicular line.
+                poly_count = len(self.poly_info_list)
+                for i in range(poly_count):
+                    for j in range(i+1, poly_count):
+                        polygon1, dragger = self.poly_info_list[i]
+                        polygon2, dragger = self.poly_info_list[j]
 
-                    MIN_COLOR = (0,255,255) # Min is lighter colour.
-                    MAX_COLOR = (0,128,128) # Max is darker colour.
+                        min1, max1, min_vert1, max_vert1 = SAT.project_polygon_onto_axis(polygon1.world_vertices, perp_norm)
+                        min2, max2, min_vert2, max_vert2 = SAT.project_polygon_onto_axis(polygon2.world_vertices, perp_norm)
 
-                    poly1_proj_min = perp_norm * min1
-                    poly1_proj_max = perp_norm * max1
-                    self.world.draw_line(poly1_proj_min, poly1_proj_max, 4, (0,191,191))
-                    
-                    self.world.draw_line(min_vert1, poly1_proj_min, 1, (64,64,64))
-                    self.world.draw_point(poly1_proj_min, 6, MIN_COLOR)
-                    self.world.draw_line(max_vert1, poly1_proj_max, 1, (64,64,64))
-                    self.world.draw_point(poly1_proj_max, 6, MAX_COLOR)
-                    
-                    poly2_proj_min = perp_norm * min2
-                    poly2_proj_max = perp_norm * max2
-                    self.world.draw_line(poly2_proj_min, poly2_proj_max, 4, (0,191,191))
+                        MIN_COLOR = (0,255,255) # Min is lighter colour.
+                        MAX_COLOR = (0,128,128) # Max is darker colour.
 
-                    self.world.draw_line(min_vert2, poly2_proj_min, 1, (64,64,64))
-                    self.world.draw_point(poly2_proj_min, 6, MIN_COLOR)
-                    self.world.draw_line(max_vert2, poly2_proj_max, 1, (64,64,64))
-                    self.world.draw_point(poly2_proj_max, 6, MAX_COLOR)
+                        poly1_proj_min = perp_norm * min1
+                        poly1_proj_max = perp_norm * max1
+                        self.world.draw_line(poly1_proj_min, poly1_proj_max, 4, (0,191,191))
+                        
+                        self.world.draw_line(min_vert1, poly1_proj_min, 1, (64,64,64))
+                        self.world.draw_point(poly1_proj_min, 6, MIN_COLOR)
+                        self.world.draw_line(max_vert1, poly1_proj_max, 1, (64,64,64))
+                        self.world.draw_point(poly1_proj_max, 6, MAX_COLOR)
+                        
+                        poly2_proj_min = perp_norm * min2
+                        poly2_proj_max = perp_norm * max2
+                        self.world.draw_line(poly2_proj_min, poly2_proj_max, 4, (0,191,191))
 
-                    self.world.draw_point(min_vert1, 6, MIN_COLOR)
-                    self.world.draw_point(max_vert1, 6, MAX_COLOR)
-                    self.world.draw_point(min_vert2, 6, MIN_COLOR)
-                    self.world.draw_point(max_vert2, 6, MAX_COLOR)
+                        self.world.draw_line(min_vert2, poly2_proj_min, 1, (64,64,64))
+                        self.world.draw_point(poly2_proj_min, 6, MIN_COLOR)
+                        self.world.draw_line(max_vert2, poly2_proj_max, 1, (64,64,64))
+                        self.world.draw_point(poly2_proj_max, 6, MAX_COLOR)
 
-                    overlap = min(max1, max2) - max(min1, min2)
-                    #print(overlap)
-                    if overlap < 0:
-                        pass
-                    else:
-                        # Draw overlap.
-                        overlap_min = max(min1, min2)
-                        overlap_max = min(max1, max2)
-                        overlap_proj_min = perp_norm * overlap_min
-                        overlap_proj_max = perp_norm * overlap_max
-                        self.world.draw_line(overlap_proj_min, overlap_proj_max, 8, RenderUtil.RED)
+                        self.world.draw_point(min_vert1, 6, MIN_COLOR)
+                        self.world.draw_point(max_vert1, 6, MAX_COLOR)
+                        self.world.draw_point(min_vert2, 6, MIN_COLOR)
+                        self.world.draw_point(max_vert2, 6, MAX_COLOR)
+
+                        overlap = min(max1, max2) - max(min1, min2)
+                        #print(overlap)
+                        if overlap < 0:
+                            pass
+                        else:
+                            # Draw overlap.
+                            overlap_min = max(min1, min2)
+                            overlap_max = min(max1, max2)
+                            overlap_proj_min = perp_norm * overlap_min
+                            overlap_proj_max = perp_norm * overlap_max
+                            self.world.draw_line(overlap_proj_min, overlap_proj_max, 8, RenderUtil.RED)
 
             # Draw edge line that's being tested.
             self.world.draw_line(edge1_pos1, edge1_pos2, 4, RenderUtil.WHITE)
