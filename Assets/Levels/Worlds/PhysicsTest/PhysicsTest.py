@@ -53,8 +53,8 @@ class PhysicsTest(ScriptBase):
                 if event.key == pygame.K_BACKSPACE:
                     self.game.load_frontend()
 
-    def update(self, deltaTime: float):
-        super().update(deltaTime)
+    def update(self, delta_time: float):
+        super().update(delta_time)
 
         key_down = False
         move_direction = Vector2(0,0)
@@ -76,7 +76,7 @@ class PhysicsTest(ScriptBase):
         if key_down:
             if move_direction.length() > 0:
                 move_direction = move_direction.normalize()
-                move = move_direction * deltaTime * 1000
+                move = move_direction * delta_time * 1000
 
                 self.polygon1.apply_impulse(move, True)
 

@@ -15,8 +15,8 @@ class PolyPolyCollisionTest(ScriptBase):
     DEBUG_DRAW_NONE = 0
     # Prokect polygons onto axes.
     DEBUG_DRAW_PROJECTION = 1
-    # Draw the contact results.
-    DEBUG_DRAW_CONTACT = 2
+    # Draw the push direction per polygon
+    DEBUG_DRAW_PUSH = 2
     # Draw the Minimum Translation Vector results.
     DEBUG_DRAW_MTV = 3
     DEBUG_DRAW_MAX = 4
@@ -38,11 +38,17 @@ class PolyPolyCollisionTest(ScriptBase):
         self.world.game.screen_color = RenderUtil.BLACK
 
         self.polygon1 = PolygonNode(world)
+        # vertices = [
+        #     Vector2(0,0),
+        #     Vector2(120,0),
+        #     Vector2(120,200),
+        #     Vector2(0,200)
+        # ]
         vertices = [
             Vector2(0,0),
-            Vector2(120,0),
-            Vector2(120,200),
-            Vector2(0,200)
+            Vector2(100,0),
+            Vector2(100,100),
+            Vector2(0,100)
         ]
         self.polygon1.set(Vector2(-150,-100), vertices, Vector2(0.5,0.5), RenderUtil.GREEN)
         self.world.nodes.append(self.polygon1)
@@ -64,13 +70,19 @@ class PolyPolyCollisionTest(ScriptBase):
         #     Vector2(0,-50),
         #     Vector2(50,50),
         # ]
+        # vertices = [
+        #     Vector2(0,0),
+        #     Vector2(150,0),
+        #     Vector2(150,200),
+        #     Vector2(0,200)
+        # ]
         vertices = [
             Vector2(0,0),
-            Vector2(150,0),
-            Vector2(150,200),
-            Vector2(0,200)
+            Vector2(100,0),
+            Vector2(100,100),
+            Vector2(0,100)
         ]
-        self.polygon2.set(Vector2(150,-100), vertices, Vector2(0,0), RenderUtil.GREEN)
+        self.polygon2.set(Vector2(150,-100), vertices, Vector2(0.5,0.5), RenderUtil.GREEN)
         self.world.nodes.append(self.polygon2)
 
         self.polyDragger2 = PolygonDragger(world)
@@ -96,7 +108,7 @@ class PolyPolyCollisionTest(ScriptBase):
         for event in self.game.cached_events:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_BACKSPACE:
-                    self.game.load_level("Assets/Levels/Frontend/Frontend.json")
+                    self.game.load_fronend()
                 elif event.key == pygame.K_SPACE:
                     self.can_step = not self.can_step
                     if self.can_step:
@@ -173,15 +185,22 @@ class PolyPolyCollisionTest(ScriptBase):
 
                         if self.debug_mode == self.DEBUG_DRAW_MTV:
                             # Draw the minimum translation vector.
-                            self.world.draw_line(MTV_result.overlaping_result.min_v1, MTV_result.overlaping_result.min_v2, 4, RenderUtil.YELLOW)
-                            self.world.draw_point(MTV_result.overlaping_result.min_v1, 6, RenderUtil.YELLOW)
-                            self.world.draw_point(MTV_result.overlaping_result.min_v2, 6, RenderUtil.YELLOW)
+                            self.world.draw_line(MTV_result.overlaping_result1.min_v1, MTV_result.overlaping_result1.min_v2, 4, RenderUtil.YELLOW)
+                            self.world.draw_point(MTV_result.overlaping_result1.min_v1, 6, RenderUtil.YELLOW)
+                            self.world.draw_point(MTV_result.overlaping_result1.min_v2, 6, RenderUtil.YELLOW)
 
-                            # Draw the contact
-                            contact_result: SAT.ContactResult = MTV_result.overlaping_result.contact_result
-                            self.world.draw_line(contact_result.vertex, contact_result.vertex + contact_result.move_away_axis * 2, 4, RenderUtil.RED)
-                            self.world.draw_point(contact_result.vertex, 6, RenderUtil.RED)
-                            self.world.draw_point(contact_result.vertex + contact_result.move_away_axis, 6, RenderUtil.RED)
+                            self.world.draw_line(MTV_result.overlaping_result2.min_v1, MTV_result.overlaping_result2.min_v2, 4, RenderUtil.YELLOW)
+                            self.world.draw_point(MTV_result.overlaping_result2.min_v1, 6, RenderUtil.YELLOW)
+                            self.world.draw_point(MTV_result.overlaping_result2.min_v2, 6, RenderUtil.YELLOW)
+
+                            # Draw push direction.
+                            push = MTV_result.overlaping_result1.push_direction * MTV_result.overlaping_result1.min_overlap
+                            self.world.draw_line(polygon1.position, polygon1.position + push, 4, RenderUtil.RED)
+                            self.world.draw_point(polygon1.position, 6, RenderUtil.RED)
+
+                            push = MTV_result.overlaping_result2.push_direction * MTV_result.overlaping_result2.min_overlap
+                            self.world.draw_line(polygon2.position, polygon2.position + push, 4, RenderUtil.RED)
+                            self.world.draw_point(polygon2.position, 6, RenderUtil.RED)
 
                     else:
                         dragger1.colliding = False
@@ -210,7 +229,7 @@ class PolyPolyCollisionTest(ScriptBase):
                     yield step_info
 
     def process_collision_step(self, deltaTime: float):
-        if self.debug_mode != self.DEBUG_DRAW_PROJECTION and self.debug_mode != self.DEBUG_DRAW_CONTACT:
+        if self.debug_mode != self.DEBUG_DRAW_PROJECTION and self.debug_mode != self.DEBUG_DRAW_PUSH:
             return
         
         if self.can_step:
@@ -232,7 +251,7 @@ class PolyPolyCollisionTest(ScriptBase):
             perp_line_end = perp * 1000
             self.world.draw_line(perp_line_start, perp_line_end, 1, RenderUtil.WHITE)
 
-            if self.debug_mode == self.DEBUG_DRAW_CONTACT:
+            if self.debug_mode == self.DEBUG_DRAW_PUSH:
                 poly_count = len(self.poly_info_list)
                 for i in range(poly_count):
                     other_polygon, dragger = self.poly_info_list[i]
@@ -243,14 +262,11 @@ class PolyPolyCollisionTest(ScriptBase):
                         self.world.draw_line(result.min_v1, result.min_v2, 6, RenderUtil.GRAY)
                         self.world.draw_point(result.min_v1, 12, RenderUtil.GRAY)
                         self.world.draw_point(result.min_v2, 12, RenderUtil.GRAY)
-                        self.world.draw_point(result.nearest_vert, 12, RenderUtil.CYAN)
 
-                        # Draw the contact point and contact axis
-                        result.calculate_contact()
-                        contact_result: SAT.ContactResult = result.contact_result
-                        self.world.draw_line(contact_result.vertex, contact_result.vertex + contact_result.move_away_axis, 10, RenderUtil.BLUE)
-                        self.world.draw_point(contact_result.vertex, 10, RenderUtil.BLUE)
-                        self.world.draw_point(contact_result.vertex + contact_result.move_away_axis, 10, RenderUtil.BLUE)
+                        # Draw push direction.
+                        push = result.push_direction * result.min_overlap
+                        self.world.draw_line(test_polygon.position, test_polygon.position + push, 4, RenderUtil.BLUE)
+                        self.world.draw_point(test_polygon.position, 6, RenderUtil.BLUE)
 
             if self.debug_mode == self.DEBUG_DRAW_PROJECTION:
                 # Draw projected polygons on the perpendicular line.

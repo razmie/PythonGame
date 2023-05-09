@@ -12,20 +12,20 @@ class PhysicsManager(NodeBase):
 
         self.game.screen_color = (0, 0, 0)
 
-    def update(self, deltaTime: float):
+    def update(self, delta_time: float):
         super().handle_events()
         self.phsx_nodes = self.get_physics_nodes()
 
-        self.update_physics(deltaTime)
+        self.update_physics(delta_time)
 
         for node in self.phsx_nodes:
             node.position = node.new_position 
             node.reconstruct_body()
     
-    def update_physics(self, deltaTime: float):
-        self.solve_collisions(deltaTime)
-        self.calculate_velocity(deltaTime)
-        self.calculate_new_node_positions(deltaTime)
+    def update_physics(self, delta_time: float):
+        self.solve_collisions(delta_time)
+        self.calculate_velocity(delta_time)
+        self.calculate_new_node_positions(delta_time)
 
     def get_physics_nodes(self):
         nodes = []
@@ -40,20 +40,20 @@ class PhysicsManager(NodeBase):
     #         if node.apply_gravity:
     #             node.acceleration = node.impulse + Vector2(0, 9.8 * node.mass)
 
-    def calculate_velocity(self, deltaTime: float):
+    def calculate_velocity(self, delta_time: float):
         for node in self.phsx_nodes:
-            node.velocity = node.velocity + node.impulse * deltaTime
+            node.velocity = node.velocity + node.impulse * delta_time
             node.impulse = Vector2(0, 0)
             #node.acceleration = Vector2(0, 0)
 
             #node.velocity = node.velocity.truncate(1000)
 
-    def calculate_new_node_positions(self, deltaTime: float):
+    def calculate_new_node_positions(self, delta_time: float):
         dampingFactor = 1.0 - 0.95
-        frameDamping = pow(dampingFactor, deltaTime)
+        frameDamping = pow(dampingFactor, delta_time)
 
         for node in self.phsx_nodes:
-            node.new_position = node.position + node.velocity * deltaTime
+            node.new_position = node.position + node.velocity * delta_time
             node.velocity *= frameDamping
 
     # def apply_constraints(self):
@@ -72,7 +72,7 @@ class PhysicsManager(NodeBase):
     #             # Get the new position of the node.
     #             node.new_position = origin + to_node_norm * (radius - node.size)
 
-    def solve_collisions(self, deltaTime: float):
+    def solve_collisions(self, delta_time: float):
          node_count = len(self.phsx_nodes)
          for i in range(node_count):
             for j in range(i + 1, node_count):
@@ -82,34 +82,19 @@ class PhysicsManager(NodeBase):
                 if CollisionUtil.are_bounding_boxes_inside(node_a.bounds, node_b.bounds):
                     MTV_result = SAT.are_polygons_intersecting(node_a.world_vertices, node_b.world_vertices)
                     if MTV_result.overlapping:
-                        axis_norm = MTV_result.overlaping_result.perp_axis.normalize()
-                        length = MTV_result.overlaping_result.min_overlap
-                        node_a.velocity = node_a.velocity - axis_norm * length
+                        push = MTV_result.overlaping_result1.push_direction * MTV_result.overlaping_result1.min_overlap
+                        prev_vel = node_a.velocity
+                        node_a.velocity = push / delta_time
 
-
-                        #contact_result = MTV_result.overlaping_result.contact_result
-
-
-
-
-                        # if contact_result.move_away_axis.length() > 0:
-                        #     axis_norm = contact_result.move_away_axis.normalize()
-                        #     length = contact_result.move_away_axis.length()
-                        #     node_a.velocity = axis_norm * -length
-                        #     #node_b.velocity = axis * -length
-
-                            # # Draw the contact
-                            # contact_result: SAT.ContactResult = MTV_result.overlaping_result.contact_result
-                            # self.world.draw_line(contact_result.vertex, contact_result.vertex + contact_result.move_away_axis, 4, RenderUtil.RED)
-                            # self.world.draw_point(contact_result.vertex, 6, RenderUtil.RED)
-                            # self.world.draw_point(contact_result.vertex + contact_result.move_away_axis, 6, RenderUtil.RED)
+                        reflection = prev_vel.reflect(MTV_result.overlaping_result1.push_direction)
+                        node_a.velocity += reflection * delta_time * 10
     
-    # def calculate_new_node_position(self, node: PolygonPhsxBody, deltaTime: float):
+    # def calculate_new_node_position(self, node: PolygonPhsxBody, delta_time: float):
     #     velocity = node.new_position - node.old_position
     #     # Save current position.
     #     node.old_position = node.new_position
     #     # Perform verlet integration.
-    #     node.new_position = node.new_position + (velocity + node.acceleration * deltaTime * deltaTime)
+    #     node.new_position = node.new_position + (velocity + node.acceleration * delta_time * delta_time)
     #     # Reset acceleration to 0.
     #     node.acceleration = Vector2(0, 0)
 

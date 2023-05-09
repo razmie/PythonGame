@@ -2,15 +2,15 @@ from Maths import Vector2
 
 # Implementation of the Separating Axis Theorem (SAT) for collision detection.
 class SAT:
-    class ContactResult:
-        def __init__(self):
-            self.vertex = Vector2()            
-            # The axis the polygon needs to move away from to stop intersecting.
-            self.move_away_axis = Vector2()
-            # The length the polygon needs to move away from the axis to stop intersecting.
-            self.move_away_length = 0
-            # If true, the contact vert was capped within the start and end of the axis.
-            self.capped = False
+    # class ContactResult:
+    #     def __init__(self):
+    #         self.vertex = Vector2()            
+    #         # The axis the polygon needs to move away from to stop intersecting.
+    #         self.move_away_axis = Vector2()
+    #         # The length the polygon needs to move away from the axis to stop intersecting.
+    #         self.move_away_length = 0
+    #         # If true, the contact vert was capped within the start and end of the axis.
+    #         self.capped = False
 
     class OverlappingResult:
         def __init__(self):
@@ -23,45 +23,47 @@ class SAT:
             # Vertex 2 on the edge that created the overlap. Belongs to the polygon that's being tested.
             self.min_v2 = Vector2()
             # The vertex on other polygon of the polygon that's being tested.
-            self.nearest_vert = Vector2()
+            self.other_vert = Vector2()
+            self.push_direction = Vector2()
 
-            self.contact_result = SAT.ContactResult()
+            #self.contact_result = SAT.ContactResult()
 
-        def calculate_contact(self):
-            self.contact_result = SAT.ContactResult()
+        # def calculate_contact(self):
+        #     self.contact_result = SAT.ContactResult()
 
-            # Get the line vector from the start to the end.
-            line = self.min_v2 - self.min_v1
-            line_norm = line.normalize()
+        #     # Get the line vector from the start to the end.
+        #     line = self.min_v2 - self.min_v1
+        #     line_norm = line.normalize()
 
-            # Project the nearest vertex onto the line.
-            line_to_nearest = self.nearest_vert - self.min_v1
-            dot = line_to_nearest.dot(line.normalize())
+        #     # Project the nearest vertex onto the line.
+        #     line_to_nearest = self.other_vert - self.min_v1
+        #     dot = line_to_nearest.dot(line.normalize())
 
-            self.contact_result.vertex =  self.min_v1 + line_norm * dot
-            self.contact_result.move_away_axis = self.nearest_vert - self.contact_result.vertex
+        #     self.contact_result.vertex =  self.min_v1 + line_norm * dot
+        #     self.contact_result.move_away_axis = self.contact_result.vertex - self.other_vert
 
-            # Check if the vertex has gone out of the line.
-            line_length = line.length()
-            if dot > line_length:
-                dot = line_length
-                self.contact_result.capped = True
-            elif dot < 0:
-                dot = 0
-                self.contact_result.capped = True
+        #     # Check if the vertex has gone out of the line.
+        #     line_length = line.length()
+        #     if dot > line_length:
+        #         dot = line_length
+        #         self.contact_result.capped = True
+        #     elif dot < 0:
+        #         dot = 0
+        #         self.contact_result.capped = True
 
-            if self.contact_result.capped:
-                # The contact is between the line start and end.
-                self.contact_result.vertex = self.min_v1 + line_norm * dot
+        #     if self.contact_result.capped:
+        #         # The contact is between the line start and end.
+        #         self.contact_result.vertex = self.min_v1 + line_norm * dot
 
-            self.contact_result.move_away_length = self.contact_result.move_away_axis.length()
+        #     self.contact_result.move_away_length = self.contact_result.move_away_axis.length()
 
     class MTVResult:
         def __init__(self):
             self.overlapping = False
             self.min_overlap = Vector2()
-            
-            #overlaping_result: SAT.OverlappingResult = None
+
+            self.overlaping_result1 = SAT.OverlappingResult()
+            self.overlaping_result2 = SAT.OverlappingResult()
 
     @staticmethod
     def are_polygons_intersecting(vertices1, vertices2):
@@ -72,26 +74,8 @@ class SAT:
             overlapping_result2 = SAT.is_polygon_overlapping_with_polygon(vertices2, vertices1)
             if overlapping_result2.overlapping:
                 result.overlapping = True
-
-                # if overlapping_result1.min_overlap < overlapping_result2.min_overlap:
-                #     result.overlaping_result = overlapping_result1
-                # else:
-                #     result.overlaping_result = overlapping_result2
-
-                overlapping_result1.calculate_contact()
-                overlapping_result2.calculate_contact()
-
-                # Always use the contact that wasn't capped within the line.
-                if overlapping_result1.contact_result.capped == False and overlapping_result2.contact_result.capped == True:
-                    result.overlaping_result = overlapping_result1
-                elif overlapping_result1.contact_result.capped == True and overlapping_result2.contact_result.capped == False:
-                    result.overlaping_result = overlapping_result2
-                else:
-                    # If both weren't capped, use the one with the smallest axis length.
-                    if overlapping_result1.contact_result.move_away_length < overlapping_result2.contact_result.move_away_length:
-                        result.overlaping_result = overlapping_result1
-                    else:
-                        result.overlaping_result = overlapping_result2
+                result.overlaping_result1 = overlapping_result1
+                result.overlaping_result2 = overlapping_result2
 
         return result
 
@@ -129,7 +113,7 @@ class SAT:
             # Subtract the two to get the edge vector.
             edge = Vector2(p2.x - p1.x, p2.y - p1.y)
             # Get the perpendicular vector.
-            perp_axis = Vector2(-edge.y, edge.x)
+            perp_axis = Vector2(-edge.y, edge.x).normalize()
 
             # Project both polygons onto the axis.
             min1, max1, min_vert1, max_vert1 = SAT.project_polygon_onto_axis(vertices1, perp_axis)
@@ -155,8 +139,10 @@ class SAT:
                     result.min_overlap = overlap
                     result.min_v1 = p1
                     result.min_v2 = p2
+                    result.push_direction = perp_axis
 
-                    result.nearest_vert = max_vert2
+                    result.other_vert = max_vert2
+                    
 
         # There isn't a separating axis, so the polygons are intersecting.
         result.overlapping = True

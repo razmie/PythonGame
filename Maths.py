@@ -24,6 +24,9 @@ class Vector2:
         if isinstance(other, (int, float)):
             return Vector2(self.x / other, self.y / other)
 
+    def __neg__(self):
+        return Vector2(-self.x, -self.y)
+
     def set(self, other):
         self.x = other.x
         self.y = other.y
@@ -79,6 +82,11 @@ class Vector2:
         projection = line_norm * dot
 
         return start + projection
+    
+    def reflect(self, normal):
+        dot_product = (self.x * normal.x + self.y * normal.y)
+        reflected = Vector2(self.x - 2 * dot_product * normal.x, self.y - 2 * dot_product * normal.y)
+        return reflected
 
 class Rect:
     def __init__(self, x: float, y: float, width: float, height: float):
