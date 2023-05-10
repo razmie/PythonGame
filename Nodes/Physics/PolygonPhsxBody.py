@@ -8,10 +8,9 @@ class PolygonPhsxBody(PolygonNode):
         self.new_position = Vector2(0, 0)
         self.force = Vector2(0, 0)
         self.mass = 100
-        #self.acceleration = Vector2(0, 0)
+        self.static = False
         self.velocity = Vector2(0, 0)
         self.impulse = Vector2(0, 0)
-        self.apply_gravity = True
 
     def set(self, position: Vector2, vertices: list[Vector2], pivot: tuple, color: tuple):
         self.new_position = position

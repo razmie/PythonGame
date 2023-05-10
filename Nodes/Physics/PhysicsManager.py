@@ -11,21 +11,28 @@ class PhysicsManager(NodeBase):
         super().__init__(world)
 
         self.game.screen_color = (0, 0, 0)
+        self.can_update = True
+        self.phsx_update_per_frame = False
 
     def update(self, delta_time: float):
         super().handle_events()
         self.phsx_nodes = self.get_physics_nodes()
 
-        self.update_physics(delta_time)
+        # if self.can_update:
+
+        #     if self.phsx_update_per_frame:
+        #         self.can_update = False
+
+        self.calculate_velocity(delta_time)
+        self.calculate_new_node_positions(delta_time)
+        self.solve_collisions(delta_time)
 
         for node in self.phsx_nodes:
             node.position = node.new_position 
             node.reconstruct_body()
-    
-    def update_physics(self, delta_time: float):
-        self.solve_collisions(delta_time)
-        self.calculate_velocity(delta_time)
-        self.calculate_new_node_positions(delta_time)
+
+            node.impulse = Vector2(0, 0)
+
 
     def get_physics_nodes(self):
         nodes = []
@@ -42,19 +49,18 @@ class PhysicsManager(NodeBase):
 
     def calculate_velocity(self, delta_time: float):
         for node in self.phsx_nodes:
-            node.velocity = node.velocity + node.impulse * delta_time
-            node.impulse = Vector2(0, 0)
-            #node.acceleration = Vector2(0, 0)
-
-            #node.velocity = node.velocity.truncate(1000)
+            if node.static == False:
+                node.velocity = node.velocity + node.impulse
+                #node.velocity = node.velocity.truncate(1000)
 
     def calculate_new_node_positions(self, delta_time: float):
         dampingFactor = 1.0 - 0.95
-        frameDamping = pow(dampingFactor, delta_time)
+        #frameDamping = pow(dampingFactor, delta_time)
 
         for node in self.phsx_nodes:
-            node.new_position = node.position + node.velocity * delta_time
-            node.velocity *= frameDamping
+            if node.static == False:
+                node.new_position = node.position + node.velocity * delta_time
+                #node.velocity *= frameDamping
 
     # def apply_constraints(self):
     #     origin = Vector2(0, 0)
@@ -82,12 +88,30 @@ class PhysicsManager(NodeBase):
                 if CollisionUtil.are_bounding_boxes_inside(node_a.bounds, node_b.bounds):
                     MTV_result = SAT.are_polygons_intersecting(node_a.world_vertices, node_b.world_vertices)
                     if MTV_result.overlapping:
-                        push = MTV_result.overlaping_result1.push_direction * MTV_result.overlaping_result1.min_overlap
-                        prev_vel = node_a.velocity
-                        node_a.velocity = push / delta_time
+                        if node_a.static == False:
+                            push_norm = MTV_result.overlaping_result1.push_direction
+                            push = push_norm * MTV_result.overlaping_result1.overlap
 
-                        reflection = prev_vel.reflect(MTV_result.overlaping_result1.push_direction)
-                        node_a.velocity += reflection * delta_time * 10
+                            reflection = node_a.velocity.reflect(MTV_result.overlaping_result1.push_direction)
+
+                            prev_vel = node_a.velocity
+                            vel_len = prev_vel.length()
+                            if vel_len > 0:
+                                opp_vel = (prev_vel.normalize() * -vel_len)
+                            else:
+                                opp_vel = Vector2(0, 0)
+                            #node_a.velocity = (node_a.velocity + opp_vel)
+
+                            #node_a.velocity += push * delta_time * node_a.mass
+        
+           
+                            node_a.velocity += reflection
+                            node_a.new_position += push
+                            pass
+
+
+
+ 
     
     # def calculate_new_node_position(self, node: PolygonPhsxBody, delta_time: float):
     #     velocity = node.new_position - node.old_position

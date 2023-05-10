@@ -17,11 +17,11 @@ class SAT:
             # True if the polygons are overlapping.
             self.overlapping = False
             # The smallest overlap found out of all tests.
-            self.min_overlap = float('inf')
+            self.overlap = float('inf')
             # Vertex 1 on the edge that created the overlap. Belongs to the polygon that's being tested.
-            self.min_v1 = Vector2()
+            self.v1 = Vector2()
             # Vertex 2 on the edge that created the overlap. Belongs to the polygon that's being tested.
-            self.min_v2 = Vector2()
+            self.v2 = Vector2()
             # The vertex on other polygon of the polygon that's being tested.
             self.other_vert = Vector2()
             self.push_direction = Vector2()
@@ -132,13 +132,13 @@ class SAT:
             projected_p1 = p1.x * perp_axis.x + p1.y * perp_axis.y
             
             # Check if the overlap is the smallest so far.
-            if overlap < result.min_overlap:
+            if overlap < result.overlap:
                 # It's possible to have multiple axes with the same overlap. This can happen when there are parallel edges.
                 # We get the one where the projected test vert falls within the overlap.
                 if projected_p1 >= overlap_min and projected_p1 <= overlap_max:
-                    result.min_overlap = overlap
-                    result.min_v1 = p1
-                    result.min_v2 = p2
+                    result.overlap = overlap
+                    result.v1 = p1
+                    result.v2 = p2
                     result.push_direction = perp_axis
 
                     result.other_vert = max_vert2

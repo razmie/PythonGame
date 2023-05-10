@@ -31,7 +31,6 @@ class PolyPolyCollisionTest(ScriptBase):
 
     def __init__(self, world: World):
         super().__init__(world)
-
         self.script_file_path = os.path.abspath(__file__)
 
         self.world.camera.position = Vector2(0,0)
@@ -185,20 +184,20 @@ class PolyPolyCollisionTest(ScriptBase):
 
                         if self.debug_mode == self.DEBUG_DRAW_MTV:
                             # Draw the minimum translation vector.
-                            self.world.draw_line(MTV_result.overlaping_result1.min_v1, MTV_result.overlaping_result1.min_v2, 4, RenderUtil.YELLOW)
-                            self.world.draw_point(MTV_result.overlaping_result1.min_v1, 6, RenderUtil.YELLOW)
-                            self.world.draw_point(MTV_result.overlaping_result1.min_v2, 6, RenderUtil.YELLOW)
+                            self.world.draw_line(MTV_result.overlaping_result1.v1, MTV_result.overlaping_result1.v2, 4, RenderUtil.YELLOW)
+                            self.world.draw_point(MTV_result.overlaping_result1.v1, 6, RenderUtil.YELLOW)
+                            self.world.draw_point(MTV_result.overlaping_result1.v2, 6, RenderUtil.YELLOW)
 
-                            self.world.draw_line(MTV_result.overlaping_result2.min_v1, MTV_result.overlaping_result2.min_v2, 4, RenderUtil.YELLOW)
-                            self.world.draw_point(MTV_result.overlaping_result2.min_v1, 6, RenderUtil.YELLOW)
-                            self.world.draw_point(MTV_result.overlaping_result2.min_v2, 6, RenderUtil.YELLOW)
+                            self.world.draw_line(MTV_result.overlaping_result2.v1, MTV_result.overlaping_result2.v2, 4, RenderUtil.YELLOW)
+                            self.world.draw_point(MTV_result.overlaping_result2.v1, 6, RenderUtil.YELLOW)
+                            self.world.draw_point(MTV_result.overlaping_result2.v2, 6, RenderUtil.YELLOW)
 
                             # Draw push direction.
-                            push = MTV_result.overlaping_result1.push_direction * MTV_result.overlaping_result1.min_overlap
+                            push = MTV_result.overlaping_result1.push_direction * MTV_result.overlaping_result1.overlap
                             self.world.draw_line(polygon1.position, polygon1.position + push, 4, RenderUtil.RED)
                             self.world.draw_point(polygon1.position, 6, RenderUtil.RED)
 
-                            push = MTV_result.overlaping_result2.push_direction * MTV_result.overlaping_result2.min_overlap
+                            push = MTV_result.overlaping_result2.push_direction * MTV_result.overlaping_result2.overlap
                             self.world.draw_line(polygon2.position, polygon2.position + push, 4, RenderUtil.RED)
                             self.world.draw_point(polygon2.position, 6, RenderUtil.RED)
 
@@ -259,12 +258,12 @@ class PolyPolyCollisionTest(ScriptBase):
                         continue
                     result = SAT.is_polygon_overlapping_with_polygon(test_polygon.world_vertices, other_polygon.world_vertices)
                     if result.overlapping:
-                        self.world.draw_line(result.min_v1, result.min_v2, 6, RenderUtil.GRAY)
-                        self.world.draw_point(result.min_v1, 12, RenderUtil.GRAY)
-                        self.world.draw_point(result.min_v2, 12, RenderUtil.GRAY)
+                        self.world.draw_line(result.v1, result.v2, 6, RenderUtil.GRAY)
+                        self.world.draw_point(result.v1, 12, RenderUtil.GRAY)
+                        self.world.draw_point(result.v2, 12, RenderUtil.GRAY)
 
                         # Draw push direction.
-                        push = result.push_direction * result.min_overlap
+                        push = result.push_direction * result.overlap
                         self.world.draw_line(test_polygon.position, test_polygon.position + push, 4, RenderUtil.BLUE)
                         self.world.draw_point(test_polygon.position, 6, RenderUtil.BLUE)
 
