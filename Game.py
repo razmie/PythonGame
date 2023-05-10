@@ -46,6 +46,9 @@ class Game:
             self.delta_time = self.currentTime - self.lastFrameTime
             self.lastFrameTime = self.currentTime
 
+            if self.is_debugging() == False:
+                print("FALSE")
+
             self.clock.tick(self.FPS)
 
             self.cached_events = pygame.event.get()
@@ -64,6 +67,15 @@ class Game:
             self.update_count += 1
 
             pygame.display.flip()
+
+            # Check if the time passed since the last frame is too long.
+            currentTime = time.time()
+            diff_time = currentTime - self.lastFrameTime
+            if diff_time > 1:
+                # The time difference is big. Fake the last delta time so that the next frame is not too big.
+                self.delta_time = 1 / self.FPS
+                self.currentTime = time.time() - self.delta_time
+                self.lastFrameTime = self.currentTime
 
     def load_level(self, level_path: str):
         self.level_path = level_path
@@ -87,3 +99,6 @@ class Game:
             if argument_name + "=" in arg:
                 return arg.split("=")[1]
         return None
+    
+    def is_debugging(self):
+        return sys.gettrace() is not None
