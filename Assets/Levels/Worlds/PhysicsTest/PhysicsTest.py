@@ -85,13 +85,13 @@ class PhysicsTest(ScriptBase):
         if key_down:
             if move_direction.length() > 0:
                 move_direction = move_direction.normalize()
-                move = move_direction * delta_time * 10
+                move = move_direction * 10 * self.polygon1.mass
 
-                self.polygon1.apply_impulse(move, True)
+                self.polygon1.apply_force(move)
 
-        down = Vector2(0,1)
-        gravity = down * 0.98 * delta_time
-        self.polygon1.apply_impulse(gravity, True)     
+        # down = Vector2(0,1)
+        # gravity = down * 0.98 * 1000
+        # self.polygon1.apply_force(gravity)     
 
     
 

@@ -27,7 +27,7 @@
             "type": "python",
             "request": "launch",
             "program": "Main.py",
-            "args": ["level=Assets/Levels/Worlds/PolyPolyCollisionTest/PolyPolyCollisionTest.json"],
+            "args": ["level=Assets/Levels/Worlds/PymunkTest/PymunkTest.json"],
             "console": "integratedTerminal",
             "justMyCode": true
         }       

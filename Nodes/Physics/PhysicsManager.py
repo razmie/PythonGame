@@ -23,16 +23,21 @@ class PhysicsManager(NodeBase):
         #     if self.phsx_update_per_frame:
         #         self.can_update = False
 
+        self.apply_gravity(delta_time)
         self.calculate_velocity(delta_time)
         self.calculate_new_node_positions(delta_time)
         self.solve_collisions(delta_time)
 
         for node in self.phsx_nodes:
-            node.position = node.new_position 
             node.reconstruct_body()
 
-            node.impulse = Vector2(0, 0)
+    def apply_gravity(self, delta_time: float):
+        down = Vector2(0,1)
+        gravity = down * 9.81
 
+        for node in self.phsx_nodes:
+            if node.static == False:
+                node.force += node.mass * gravity
 
     def get_physics_nodes(self):
         nodes = []
@@ -41,42 +46,18 @@ class PhysicsManager(NodeBase):
                 nodes.append(node)
         return nodes
 
-    # def calculate_acceleration(self):
-    #     for node in self.phsx_nodes:
-    #         #self.apply_force_to_acceleration(node)
-    #         if node.apply_gravity:
-    #             node.acceleration = node.impulse + Vector2(0, 9.8 * node.mass)
-
     def calculate_velocity(self, delta_time: float):
         for node in self.phsx_nodes:
-            if node.static == False:
-                node.velocity = node.velocity + node.impulse
-                #node.velocity = node.velocity.truncate(1000)
+            node.velocity += node.force/node.mass * delta_time
 
     def calculate_new_node_positions(self, delta_time: float):
         dampingFactor = 1.0 - 0.95
         #frameDamping = pow(dampingFactor, delta_time)
 
         for node in self.phsx_nodes:
-            if node.static == False:
-                node.new_position = node.position + node.velocity * delta_time
-                #node.velocity *= frameDamping
-
-    # def apply_constraints(self):
-    #     origin = Vector2(0, 0)
-    #     radius = 200
-
-    #     for node in self.phsx_nodes:
-    #         # Get vector from origin to node.
-    #         to_node = node.new_position - origin
-    #         # Get the distance from the origin to the node.
-    #         distance = to_node.length()
-
-    #         if distance > radius - node.size:
-    #             # Get the normalized vector from the origin to the node.
-    #             to_node_norm = to_node / distance
-    #             # Get the new position of the node.
-    #             node.new_position = origin + to_node_norm * (radius - node.size)
+            node.position += node.velocity * delta_time
+            #node.velocity *= frameDamping
+            node.force = Vector2(0, 0)
 
     def solve_collisions(self, delta_time: float):
          node_count = len(self.phsx_nodes)
@@ -90,7 +71,7 @@ class PhysicsManager(NodeBase):
                     if MTV_result.overlapping:
                         if node_a.static == False:
                             push_norm = MTV_result.overlaping_result1.push_direction
-                            push = push_norm * MTV_result.overlaping_result1.overlap
+                            push = push_norm * MTV_result.overlaping_result1.depth
 
                             reflection = node_a.velocity.reflect(MTV_result.overlaping_result1.push_direction)
 
@@ -105,26 +86,11 @@ class PhysicsManager(NodeBase):
                             #node_a.velocity += push * delta_time * node_a.mass
         
            
-                            node_a.velocity += reflection
-                            node_a.new_position += push
+                            #node_a.velocity += reflection
+                            node_a.position += push
+
+
+                            #node_a.velocity += push * delta_time
+                            #ode_a.force += node_a.mass * push / delta_time
                             pass
-
-
-
- 
-    
-    # def calculate_new_node_position(self, node: PolygonPhsxBody, delta_time: float):
-    #     velocity = node.new_position - node.old_position
-    #     # Save current position.
-    #     node.old_position = node.new_position
-    #     # Perform verlet integration.
-    #     node.new_position = node.new_position + (velocity + node.acceleration * delta_time * delta_time)
-    #     # Reset acceleration to 0.
-    #     node.acceleration = Vector2(0, 0)
-
-    # def apply_force_to_acceleration(self, node: PolygonPhsxBody):
-    #     if node.mass == 0:
-    #         node.acceleration = Vector2(0, 0)
-    #         return
-    #     node.acceleration = node.force / node.mass
 

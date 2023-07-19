@@ -107,7 +107,7 @@ class PolyPolyCollisionTest(ScriptBase):
         for event in self.game.cached_events:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_BACKSPACE:
-                    self.game.load_fronend()
+                    self.game.load_frontend()
                 elif event.key == pygame.K_SPACE:
                     self.can_step = not self.can_step
                     if self.can_step:
@@ -193,11 +193,11 @@ class PolyPolyCollisionTest(ScriptBase):
                             self.world.draw_point(MTV_result.overlaping_result2.v2, 6, RenderUtil.YELLOW)
 
                             # Draw push direction.
-                            push = MTV_result.overlaping_result1.push_direction * MTV_result.overlaping_result1.overlap
+                            push = MTV_result.overlaping_result1.push_direction * MTV_result.overlaping_result1.depth
                             self.world.draw_line(polygon1.position, polygon1.position + push, 4, RenderUtil.RED)
                             self.world.draw_point(polygon1.position, 6, RenderUtil.RED)
 
-                            push = MTV_result.overlaping_result2.push_direction * MTV_result.overlaping_result2.overlap
+                            push = MTV_result.overlaping_result2.push_direction * MTV_result.overlaping_result2.depth
                             self.world.draw_line(polygon2.position, polygon2.position + push, 4, RenderUtil.RED)
                             self.world.draw_point(polygon2.position, 6, RenderUtil.RED)
 
@@ -263,7 +263,7 @@ class PolyPolyCollisionTest(ScriptBase):
                         self.world.draw_point(result.v2, 12, RenderUtil.GRAY)
 
                         # Draw push direction.
-                        push = result.push_direction * result.overlap
+                        push = result.push_direction * result.depth
                         self.world.draw_line(test_polygon.position, test_polygon.position + push, 4, RenderUtil.BLUE)
                         self.world.draw_point(test_polygon.position, 6, RenderUtil.BLUE)
 

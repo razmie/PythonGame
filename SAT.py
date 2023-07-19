@@ -16,8 +16,8 @@ class SAT:
         def __init__(self):
             # True if the polygons are overlapping.
             self.overlapping = False
-            # The smallest overlap found out of all tests.
-            self.overlap = float('inf')
+            # The smallest overlap depth found out of all tests.
+            self.depth = float('inf')
             # Vertex 1 on the edge that created the overlap. Belongs to the polygon that's being tested.
             self.v1 = Vector2()
             # Vertex 2 on the edge that created the overlap. Belongs to the polygon that's being tested.
@@ -132,11 +132,11 @@ class SAT:
             projected_p1 = p1.x * perp_axis.x + p1.y * perp_axis.y
             
             # Check if the overlap is the smallest so far.
-            if overlap < result.overlap:
+            if overlap < result.depth:
                 # It's possible to have multiple axes with the same overlap. This can happen when there are parallel edges.
                 # We get the one where the projected test vert falls within the overlap.
                 if projected_p1 >= overlap_min and projected_p1 <= overlap_max:
-                    result.overlap = overlap
+                    result.depth = overlap
                     result.v1 = p1
                     result.v2 = p2
                     result.push_direction = perp_axis

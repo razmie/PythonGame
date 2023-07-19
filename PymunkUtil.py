@@ -94,6 +94,7 @@ class PymunkDrawOptions(pymunk.SpaceDebugDrawOptions):
         """
 
         self.surface = world.game.screen
+        self.world = world
         super(PymunkDrawOptions, self).__init__()
 
     def draw_circle(
@@ -104,12 +105,22 @@ class PymunkDrawOptions(pymunk.SpaceDebugDrawOptions):
         outline_color: SpaceDebugColor,
         fill_color: SpaceDebugColor,
     ) -> None:
-        
-        self.world.draw_point(Vector2(pos.x, pos.y), radius, (255, 0,0))
 
-        # p = to_pygame(pos, self.surface)
+        screen_pos = self.world.camera.world_to_screen(Vector2(pos.x, pos.y))
+        screen_size = self.world.camera.world_to_screen_size(10)
 
-        # pygame.draw.circle(self.surface, fill_color.as_int(), p, round(radius), 0)
+        color = fill_color.as_int()
+
+        # Draw circle on seperate surface to fix bug with draw circle.
+        circle_surface = pygame.Surface((screen_size*2, screen_size*2), pygame.SRCALPHA)
+        pygame.draw.circle(circle_surface, color, (screen_size, screen_size), screen_size)
+
+        self.world.game.screen.blit(circle_surface, (screen_pos.x - screen_size, screen_pos.y - screen_size))
+
+        #self.world.draw_point(Vector2(pos.x, pos.y), radius, fill_color.as_int())
+
+        #p = to_pygame(pos, self.surface)
+        #pygame.draw.circle(self.surface, fill_color.as_int(), p, round(radius), 0)
 
         # circle_edge = pos + Vec2d(radius, 0).rotated(angle)
         # p2 = to_pygame(circle_edge, self.surface)

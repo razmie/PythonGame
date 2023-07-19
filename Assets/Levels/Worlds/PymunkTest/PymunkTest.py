@@ -13,6 +13,7 @@ class PymunkTest(ScriptBase):
         self.space = pymunk.Space()
         self.space.gravity = (0.0, 981.0)
         self.draw_options = PymunkDrawOptions(self.world)
+        #self.draw_options = pymunk.SpaceDebugDrawOptions()
 
         self.add_object()
 
