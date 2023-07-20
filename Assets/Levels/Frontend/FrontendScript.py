@@ -12,7 +12,7 @@ class FrontendScript(ScriptBase):
         self.create_button("test1", "Polygon & Point Collision Test")
         self.create_button("test2", "Polygon & Polygon Collision Test")
         self.create_button("test3", "Verlet Physics Test")
-        self.create_button("test4", "Physics Test")
+        #self.create_button("test4", "Physics Test")
 
     def on_button_click(self, button: ButtonWidget):
         if button.name == "test1":
@@ -21,8 +21,8 @@ class FrontendScript(ScriptBase):
             self.game.load_level("Assets/Levels/Worlds/PolyPolyCollisionTest/PolyPolyCollisionTest.json")
         elif button.name == "test3":
             self.game.load_level("Assets/Levels/Worlds/VerletTest/VerletTest.json")
-        elif button.name == "test4":
-            self.game.load_level("Assets/Levels/Worlds/PhysicsTest/PhysicsTest.json")
+        #elif button.name == "test4":
+        #    self.game.load_level("Assets/Levels/Worlds/PhysicsTest/PhysicsTest.json")
 
     def create_button(self, button_name: str, text: str):
         screen_size = self.world.game.screen.get_size()
